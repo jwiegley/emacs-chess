@@ -1,0 +1,65 @@
+/* XPM */
+/* This file was automatically generated from the file ../KAYHAN.V48
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"48 48 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+".................   ........   .................",
+"................  X  ......  X  ................",
+"................ XXX ...... XXX ................",
+"................  X  ......  X  ................",
+".................   ........   .................",
+".................   ........ X .................",
+"................. X ........ X .................",
+"....   .........  X  ......  X  .........   ....",
+"...  X  ........ XXX ...... XXX ........  X  ...",
+"... XXX .......  XXX ...... XXX ........ XXX ...",
+"...  X  .......  XXX .....  XXX  .......  X  ...",
+"....  X  ...... XXXXX .... XXXXX ......  X  ....",
+"..... XX  ..... XXXXX .... XXXXX .....  XX .....",
+"...... XX  ...  XXXXX  ... XXXXX  ...  XX ......",
+"...... XXX   .  XXXXXX .. XXXXXX  .   XXX ......",
+"....... XXX    XXXXXXX    XXXXXXX    XXX .......",
+"....... XXXXX  XXXXXXXX  XXXXXXXX  XXXXX .......",
+"........ XXXXX XXXXXXXX  XXXXXXXX XXXXX ........",
+"........ XXXXXXXXXXXXXX  XXXXXXXXXXXXXX ........",
+"......... XXXXXXXXXXXXXXXXXXXXXXXXXXXX .........",
+"......... XXXXXXXXXXXXXXXXXXXXXXXXXXXX .........",
+"......... XXXXXXXXXXXXXXXXXXXXXXXXXXXX .........",
+".......... XXXXXXXX          XXXXXXXX ..........",
+".......... XXXX     XXXXXXXX     XXXX ..........",
+"..........      XXXXXXXXXXXXXXXX      ..........",
+".......... XXXXXXXXXXXX  XXXXXXXXXXXX ..........",
+".......... XXXXXXXXXXXX  XXXXXXXXXXXX ..........",
+"...........  XXXXXXXXXX  XXXXXXXXXX  ...........",
+"...........  XXXXXXXXXXXXXXXXXXXXXX  ...........",
+"........... XXXXXXXXXXXXXXXXXXXXXXXX ...........",
+"........... XXXXXXX          XXXXXXX ...........",
+"........... XXXX    XXXXXXXX    XXXX ...........",
+"........... X    XXXXXXXXXXXXXX    X ...........",
+"...........  XXXXXXXXXXXXXXXXXXXXXX  ...........",
+"............  XXXXXXXXXXXXXXXXXXXX  ............",
+".............    XXXXXXXXXXXXXX    .............",
+"................    XXXXXXXX    ................",
+"...................          ...................",
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+};

@@ -1,0 +1,57 @@
+/* XPM */
+/* This file was automatically generated from the file ../TRUMPET.V40
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"40 40 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"****************************************",
+"****************************************",
+"****************************************",
+"****************************************",
+"****************************************",
+"****************************************",
+"****************************************",
+"****************************************",
+"******XXXXXX****XXXXXXX****XXXXXXX******",
+"******XXXXXX****XXXXXXX****XXXXXXX******",
+"******XXXXXX****XXXXXXX****XXXXXXX******",
+"******XXXXXXXXXXXXXXXXXXXXXXXXXXXX******",
+"******XXXXXXXXXXXXXXXXXXXXXXXXXXXX******",
+"******XXXXXXXXXXXXXXXXXXXXXXXXXXXX******",
+"*******XXXXXXXXXXXXXXXXXXXXXXXXXX*******",
+"****************************************",
+"********XXXXXXXXXXXXXXXXXXXXXXXX********",
+"********XXXXXXXXXXXXXXXXXXXXXXXX********",
+"**********XXXXXXXXXXXXXXXXXXXX**********",
+"***********XX*XX*XX*XXXXXXXXX***********",
+"***********XXXXXXXXXXXXXXXXXX***********",
+"***********XXXXXXXXXXXXXXXXXX***********",
+"***********XXX*XX*XX*XXXXXXXX***********",
+"***********XXXXXXXXXXXXXXXXXX***********",
+"***********XXXXXXXXXXXXXXXXXX***********",
+"***********X*XX*XX*XX*XXXXXXX***********",
+"***********XXXXXXXXXXXXXXXXXX***********",
+"***********XXXXXXXXXXXXXXXXXX***********",
+"***********XX*XX*XX*XX*XXXXXX***********",
+"**********XXXXXXXXXXXXXXXXXXXX**********",
+"*********XXXXXXXXXXXXXXXXXXXXXX*********",
+"********XXX*XX*XX*XX*XX*XXXXXXXX********",
+"********XXXXXXXXXXXXXXXXXXXXXXXX********",
+"********XXXXXXXXXXXXXXXXXXXXXXXX********",
+"****************************************",
+"*******XXXXXXXXXXXXXXXXXXXXXXXXXX*******",
+"*******XX**XXXXXXXX**XXXXXXXX**XX*******",
+"******XXX**XXXXXXXX**XXXXXXXX**XXX******",
+"******XXXXXXXXXXXXXXXXXXXXXXXXXXXX******",
+"****************************************",
+};

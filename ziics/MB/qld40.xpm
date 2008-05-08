@@ -1,0 +1,57 @@
+/* XPM */
+/* This file was automatically generated from the file ../MB.V40
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"40 40 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"........................................",
+"........  ..... .... .... ..... ........",
+"........   ..  X .  X .  X ...  ........",
+"........  X .  X .  X .  X .  X ........",
+"........  X .  X .  X .  X .  X ........",
+"....... XXX .  X .  X .  X .  XX .......",
+"....... XXX .  X .  X .  X .  XX .......",
+"....... XXX .  X .  X .  X .  XX .......",
+"....... XXXX XXX .  X .  XX XXXX .......",
+"....... XXXX XXX .  X .  XX XXXX .......",
+"....... XXXX XXXX XXXX XXXX XXXX .......",
+"....... XXXXXXXXX XXXX XXXXXXXXX .......",
+"....... XXXXXXXXX XXXX XXXXXXXXX .......",
+"....... XXXXXXXXXXXXXXXXXXXXXXXX .......",
+"....... XXXXXXXXXXXXXXXXXXXXXXXX .......",
+"....... XXXXXXXXXXXXXXXXXXXXXXXX .......",
+"....... XXXXXXXXXXXXXXXXXXXXXXXX .......",
+"........  XXXXXXXXXXXXXXXXXXXXX ........",
+"........  XXXXXXXXXXXXXXXXXXXXX ........",
+"........  XXXXXXXXXXXXXXXXXXXXX ........",
+"........  XXXXXXXXXXXXXXXXXXXXX ........",
+".......... XXXXXXXXXXXXXXXXXXX .........",
+".......... XXXXXXXXXXXXXXXXXXX .........",
+"........... XXXXXXXXXXXXXXXX  ..........",
+"........... XXXXXXXXXXXXXXXX  ..........",
+"............ XXXXXXXXXXXXXX ............",
+".............  XXXXXXXXXXX .............",
+"............... XXXXXXXXX ..............",
+"............... XXXXXXXXX ..............",
+"............... XXXXXXXXX ..............",
+"............... XXXXXXXXX ..............",
+"............... XXXXXXXXX ..............",
+"............... XXXXXXXXX ..............",
+"........        XXXXXXXXX       ........",
+"........        XXXXXXXXX       ........",
+"....... XXXXXXXXXXXXXXXXXXXXXXXX .......",
+"....... XXXXXXXXXXXXXXXXXXXXXXXX .......",
+".......                          .......",
+"........................................",
+"........................................",
+};

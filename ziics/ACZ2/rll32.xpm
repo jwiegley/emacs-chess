@@ -1,0 +1,49 @@
+/* XPM */
+/* This file was automatically generated from the file ../ACZ2.V32
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"32 32 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"********************************",
+"********************************",
+"********************************",
+"*****     ****     ****     ****",
+"***** XXX **** XXX **** XXX ****",
+"***** XXXX    XXXXX    XXXX ****",
+"***** XXXXXXXXXXXXXXXXXXXXX ****",
+"***** XXXXXXXXXXXXXXXXXXXXX ****",
+"****** XXXXXXXXXXXXXXXXXXX *****",
+"******* XX             XX ******",
+"******** XXXXXXXXXXXXXXX *******",
+"********* XXXXXX*XXXXXX ********",
+"********** XXXXX*XXXXX *********",
+"********** XXXX*X*XXXX *********",
+"********** XXX*XXX*XXX *********",
+"********** XXXX*X*XXXX *********",
+"********* XX*XXX*XXX*XX ********",
+"********* X***XX*XX***X ********",
+"********* XX*XXX*XXX*XX ********",
+"********* XXXXXX*XXXXXX ********",
+"******** XXXXXX*X*XXXXXX *******",
+"******** XXXXX*XXX*XXXXX *******",
+"******** XXXX*XXXXX*XXXX *******",
+"******** XXXXX*XXX*XXXXX *******",
+"*****   XXXXXXX*X*XXXXXXX   ****",
+"***** XXXXXXXXXX*XXXXXXXXXX ****",
+"***** XXXXXXXXXXXXXXXXXXXXX ****",
+"***** X*******************X ****",
+"***** XXXXXXXXXXXXXXXXXXXXX ****",
+"***** XXXXXXXXXXXXXXXXXXXXX ****",
+"*****                       ****",
+"********************************",
+};

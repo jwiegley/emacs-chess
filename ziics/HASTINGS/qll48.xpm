@@ -1,0 +1,65 @@
+/* XPM */
+/* This file was automatically generated from the file ../HASTINGS.V48
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"48 48 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"************************************************",
+"************************************************",
+"**********************   ***********************",
+"*********************  X  **********************",
+"********************* XXX **********************",
+"*********************  X  **********************",
+"************   *******   *******   *************",
+"***********  X  ****** X ******  X  ************",
+"*********** XXX ****** X ****** XXX ************",
+"***********  X  ****** X ******  X  ************",
+"************   ******* X *******   *************",
+"************ XX ****** X ****** XX *************",
+"***   ****** XX *****  X ****** XX ******   ****",
+"**  X  ***** XX  **** XXX ****  X  *****  X  ***",
+"** XXX *****  XX **** XXX **** XX ****** XXX ***",
+"**  X  ****** XX **** XXX **** XX ******  X  ***",
+"***     ***** XX  *** XXX ***  XX *****     ****",
+"***** X  **** XXX *** XXX *** XXX ****  X ******",
+"***** XX  **** XX  ** XXX *** XX ****  XX ******",
+"*****  XX **** XXX *  XXX  * XXX **** XX  ******",
+"******  X  *** XXX * XXXXX * XXX ***  X  *******",
+"******* XX  ** XXXX  XXXXX  XXXX **  XX ********",
+"*******  XX  ** XXX  XXXXX  XXX **  XX *********",
+"********  XX  * XXX  XXXXX  XXX *  XX  *********",
+"********* XXX   XXXX XXXXX XXXX   XXX **********",
+"*********  XXX  XXXX XXXXX XXXX  XXX  **********",
+"********** XXXXXXXXXXXXXXXXXXXXXXXXX ***********",
+"********** XXXXXXXXXXXXXXXXXXXXXXXXX ***********",
+"********** XXXXXXXXXX     XXXXXXXXXX ***********",
+"**********  XXXX     XX XX     XXXX  ***********",
+"***********     XXXXXXX XXXXXXX     ************",
+"***********  XXXXXXXXX   XXXXXXXXX  ************",
+"*********** X XXXXXXX  X  XXXXXXX X ************",
+"*********** X  XXXX   XXX   XXXX  X ************",
+"*********** X   XXXXX  X  XXXXX   X ************",
+"*********** X  XXXXXXX   XXXXXXX  X ************",
+"*********** X XXXXXXXXX XXXXXXXXX X ************",
+"***********  XXXXX           XXXXX  ************",
+"************      XXXXXXXXXXX      *************",
+"************* XXXXXXXXXXXXXXXXXXX **************",
+"*************    XXXXXXXXXXXXX    **************",
+"***************     XXXXXXX    *****************",
+"******************           *******************",
+"************************************************",
+"************************************************",
+"************************************************",
+"************************************************",
+"************************************************",
+};

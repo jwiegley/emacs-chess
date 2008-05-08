@@ -1,0 +1,49 @@
+/* XPM */
+/* This file was automatically generated from the file ../STORM.V32
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"32 32 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"................................",
+"...............   ..............",
+".............  XXX  ............",
+"............. XXXXX ............",
+".............  XXX  ............",
+"............... X ..............",
+".............. XXX .............",
+"............. XXXXX ............",
+"..........   XXX XXX   .........",
+".......... X XX X XXXX .........",
+".......... XX XXXXXXXX .........",
+"........... XXXXXXX X ..........",
+"............ XXXX  X ...........",
+".............  XXX  ............",
+"...............   ..............",
+".............. XXX .............",
+"...............   ..............",
+".............. XXX .............",
+"............. XXXXX ............",
+"............ XXXXXXX ...........",
+"............. XXX   ............",
+"............. XXXXX ............",
+"............ XXXXXXX ...........",
+"............. XXXX  ............",
+"...........  XXXXXXX  ..........",
+".........  XXXXXXXXXXX  ........",
+".......  XXXXXXXXXXXXXXX  ......",
+"........   X XXXXXXXX    .......",
+"....... XXXXXXXXXXXXXXXXX ......",
+"...... XXXXXXXXXXXXXXXXXXX .....",
+"......                     .....",
+"................................",
+};

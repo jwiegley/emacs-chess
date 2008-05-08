@@ -1,0 +1,49 @@
+/* XPM */
+/* This file was automatically generated from the file ../SOLID.V32
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"32 32 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"********************************",
+"***************XX***************",
+"***************XX***************",
+"****************X***************",
+"********X******XX*****XX********",
+"***************XX*****X*********",
+"***************XX*****X*********",
+"***************XX*****X*********",
+"*X*******X*****XX****XX*********",
+"*X*******X*****XX****XX******X**",
+"*X*******XX****XX****XX******X**",
+"**X******XX***XXX****XX*********",
+"**XX*****XX***XXX****XX*****X***",
+"**XXX****XXX**XXX***XXX****XX***",
+"***XX****XXX**XXX***XXX***XXX***",
+"***XX****XXX**XXX***XXX***XXX***",
+"***XXX***XXXX*XXX**XXXX**XXXX***",
+"***XXXX**XXXX*XXX**XXXX**XXXX***",
+"***XXXXX*XXXXXXXXXXXXXX*XXXX****",
+"****XXXX*XXXXXXXXXXXXXX*XXXX****",
+"****XXXXXXXXXXXXXXXXXXXXXXXX****",
+"****XXXXXXXXXXXXXXXXXXXXXXXX****",
+"****XXXXXXXXX*****XXXXXXXXXX****",
+"*****XX******XXXXX*******XX*****",
+"*****X***XXXXXX**XXXXX***X******",
+"*****XX**XXXX*****XXXXX**X******",
+"******X******XXXXX**************",
+"******XXXXXXXXXXXXXXXXXXX*******",
+"*****XXXXXXXXXXXXXXXXXXXXX******",
+"********************************",
+"********************************",
+"********************************",
+};

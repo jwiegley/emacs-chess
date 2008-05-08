@@ -1,0 +1,67 @@
+/* XPM */
+/* This file was automatically generated from the file ../SOLID.V50
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"50 50 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"**************************************************",
+"*************************** **********************",
+"*************************    *********************",
+"*************************    *********************",
+"*************************** **********************",
+"************************       *******************",
+"************************ XXXX  *******************",
+"************************ XXXX  *******************",
+"*******         ******** XX X  ******           **",
+"****             ******* XX X  ****              *",
+"****     XXXXXX     **** XX X  **       XXXXX    *",
+"****     XXXXXX     **** XX X  **       XXXXX    *",
+"***     X      X     *** XXXX  **    XXX     XX   ",
+"***    X        X      *     ***    X          X  ",
+"***  XX          XX    **    **    X           X  ",
+"***  XX          XX    **    **    X           X  ",
+"*    XX            X               X     XXX   X  ",
+"*    XX  XXX       X       X     XX  XX  XXX   X  ",
+"*    XX  XXX   X    X    XXX    X      X XXX   X  ",
+"*    XX  XXX   X    X    XXX    X      X XXX   X  ",
+"*    XX     X  X    X           X      XX      X  ",
+"*    XX     X  X     XX        X       XXXXX   X  ",
+"***  XX  XXXXXXX     XX        X       XX      X  ",
+"***  XX  XXXXXXX     XX        X       XX      X  ",
+"***  XX     XXXX     XX  XXX   X       XX      X  ",
+"***  XX        X       X   X   X     XXX     XX   ",
+"***    X       X       X     XX      XX      XX   ",
+"***    X       X       X     XX      XX      XX   ",
+"****   X        X      X     XX      XX      XX  *",
+"****    X       X       X    XX     X        XX  *",
+"****    X       X       X  X XX     X       X    *",
+"****    X       X       X  X XX     X       X    *",
+"*****    XX      XX     X  X XX    X        X   **",
+"*******  XX      XX     X    XX            X   ***",
+"*******    X            X    XX          XX    ***",
+"*******    X            X    XX          XX    ***",
+"********    XXXXXXXXXXXXX    XXXXXXXXXXXX    *****",
+"*********                                   ******",
+"***********                                *******",
+"***********                                *******",
+"************   XXXXXXXXXXXXXXXXXXXXXXXX  *********",
+"************ XX                        X *********",
+"************ XX         XXXXXXX        X *********",
+"************ XX         XXXXXXX        X *********",
+"************ XX                        X *********",
+"************ XXXXXXXXXXXXXXXXXXXXXXXXXXX *********",
+"************                             *********",
+"************                             *********",
+"**************************************************",
+"**************************************************",
+};

@@ -1,0 +1,67 @@
+/* XPM */
+/* This file was automatically generated from the file ../RAIN.V50
+using the program ``zic2xpm''.
+
+    NOTICE: The piece images distributed with ZIICS are
+        copyrighted works of their original creators.  Images
+        converted with zic2xpm may not be redistributed without
+        the permission of the copyright holders.  Do not contact
+        the authors of zic2xpm or of ZIICS itself to request
+        permission. */
+static char * image_name[] = {
+"50 50 4 1",
+"X	c white s light_piece",
+" 	c black s dark_piece",
+"*	c gray s light_square",
+".	c green s dark_square",
+"..................................................",
+"..................................................",
+"..................................................",
+"..................................................",
+"..................................................",
+"..................................................",
+".................   ...........   ................",
+"................  X  .........  X  ...............",
+"................ XXX ......... XXX ...............",
+"................  X  .........  X  ...............",
+".................   ...........   ................",
+"..................  ...........  .................",
+".................    .........    ................",
+"................. XX  .......  XX ................",
+"................. XXX ....... XXX ................",
+"................  XXXX ..... XXXX  ...............",
+".....   ........ XXXXX  ...  XXXXX ........   ....",
+"....  X  ....... XXXXXX ... XXXXXX .......  X  ...",
+".... XXX ......  XXXXXX  .  XXXXXX  ...... XXX ...",
+"....  X  ...... XXXXXXXX   XXXXXXXX ......  X  ...",
+".....     ..... XXXXXXXXX XXXXXXXXX .....     ....",
+"......  X  .... XXXXXXXXXXXXXXXXXXX ....  X  .....",
+"....... XX   .  XXXXXXXXXXXXXXXXXXX  .   XX ......",
+".......  XXX   XXXXXXXXXXXXXXXXXXXXX   XXX  ......",
+"........ XXXXX XXXXXXXXXXXXXXXXXXXXX XXXXX .......",
+"........  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  .......",
+"......... XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  ........",
+".......... XXXXXXXXXXXXXXXXXXXXXXXXXXXXX .........",
+"..........  XXXXX                 XXXXX  .........",
+"...........      XXXXXXXXXXXXXXXXX      ..........",
+"...........  XXXXXXXXXXXXXXXXXXXXXXXXX  ..........",
+"........... XXXXXXXXXXXXXXXXXXXXXXXXXXX ..........",
+"........... XXXXXXXXXXXXXXXXXXXXXXXXXXX ..........",
+"........... XXXXXXXXXXX     XXXXXXXXXXX ..........",
+"...........   XXXXXXXXX     XXXXXXXXX   ..........",
+"...........   XXXXXXXXXXXXXXXXXXXXXXX   ..........",
+"............ XXXXXXXXXXXXXXXXXXXXXXXXX ...........",
+"............ XXXXXXXXXXXXXXXXXXXXXXXXX ...........",
+"............ XXXXXXXXXXXXXXXXXXXXXXXXX ...........",
+"............ XXXXX               XXXXX ...........",
+"............      XXXXXXXXXXXXXXX      ...........",
+"............ XXXXXXXXXXXXXXXXXXXXXXXXX ...........",
+"............ XXXXXXXXXXXXXXXXXXXXXXXXX ...........",
+"............ XXXXXXXXXXXXXXXXXXXXXXXXX ...........",
+".............     XXXXXXXXXXXXXXX     ............",
+"..................               .................",
+"..................................................",
+"..................................................",
+"..................................................",
+"..................................................",
+};
