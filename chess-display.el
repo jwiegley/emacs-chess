@@ -188,6 +188,9 @@ of the board, if non-nil, the board is viewed from White's perspective."
       (chess-game-set-data chess-module-game 'my-color t))
     (chess-display-set-index nil 0)))
 
+(defvar chess-display-edit-position nil)
+(make-variable-buffer-local 'chess-display-edit-position)
+
 (defun chess-display-position (display)
   "Return the position currently viewed on DISPLAY."
   (chess-with-current-buffer display
@@ -381,7 +384,16 @@ also view the same game."
   '((not-your-move . "It is not your turn to move")
     (game-is-over  . "This game is over")))
 
-(defun chess-display-move (display ply &optional prev-pos pos)
+(defsubst chess-display-active-p ()
+  "Return non-nil if the displayed chessboard reflects an active game.
+Basically, it means we are playing, not editing or reviewing."
+  (and (chess-game-data chess-module-game 'active)
+       (= chess-display-index
+	  (chess-game-index chess-module-game))
+       (not (chess-game-over-p chess-module-game))
+       (not chess-display-edit-mode)))
+
+(defun chess-display-move (display ply &optional _prev-pos _pos)
   "Move a piece on DISPLAY, by applying the given PLY.
 The position of PLY must match the currently displayed position.
 If only START is given, it must be in algebraic move notation."
@@ -623,7 +635,7 @@ See `chess-display-type' for the different kinds of displays."
 		   ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8
 		   ?r ?n ?b ?q ?k
 		   ?R ?N ?B ?Q ?K
-		   ?o ?O ?x))
+		   ?o ?O ?x ?=))
       (define-key map (vector key) 'chess-input-shortcut))
     (define-key map [backspace] 'chess-input-shortcut-delete)
 
@@ -684,15 +696,6 @@ The key bindings available in this mode are:
 ;;
 ;; Commands used by the keyboard bindings above
 ;;
-
-(defsubst chess-display-active-p ()
-  "Return non-nil if the displayed chessboard reflects an active game.
-Basically, it means we are playing, not editing or reviewing."
-  (and (chess-game-data chess-module-game 'active)
-       (= chess-display-index
-	  (chess-game-index chess-module-game))
-       (not (chess-game-over-p chess-module-game))
-       (not chess-display-edit-mode)))
 
 (defun chess-display-invert ()
   "Invert the perspective of the current chess board."
@@ -808,7 +811,7 @@ Basically, it means we are playing, not editing or reviewing."
 (defun chess-display-search-backward (&optional direction)
   (interactive)
   (setq chess-display-previous-index chess-display-index)
-  (condition-case err
+  (condition-case nil
       (let ((chess-display-search-direction direction)
 	    (chess-current-display (current-buffer)))
 	(read-from-minibuffer "Find algebraic move: " nil
@@ -847,11 +850,12 @@ Basically, it means we are playing, not editing or reviewing."
 		  (if (chess-pos-side-to-move (chess-display-position nil))
 		      "White" "Black")
 		  (1+ (/ (or chess-display-index 0) 2))))))
-  (let ((ply (let ((chess-ply-allow-interactive-query t))
-	       (chess-algebraic-to-ply (chess-display-position nil) move))))
+  (let ((ply (chess-algebraic-to-ply (chess-display-position nil) move)))
     (unless ply
       (chess-error 'illegal-notation move))
     (chess-display-move nil ply)))
+
+(defvar chess-images-separate-frame)
 
 (defun chess-display-remote (display)
   (interactive "sDisplay this game on X server: ")
@@ -969,25 +973,24 @@ Basically, it means we are playing, not editing or reviewing."
     (ding)))
 
 (defun chess-display-list-buffers ()
-  "List all buffers related to this display's current game."
+  "List all buffders related to this display's current game."
   (interactive)
-  (let ((buffer-list-func (symbol-function 'buffer-list)))
-    (unwind-protect
-	(let ((chess-game chess-module-game)
-	      (lb-command (lookup-key ctl-x-map [(control ?b)]))
-	      (ibuffer-maybe-show-regexps nil))
-	  (fset 'buffer-list
-		(function
-		 (lambda (&optional frame)
-		   (delq nil
-			 (mapcar (function
-				  (lambda (cell)
-				    (and (bufferp (cdr cell))
-					 (buffer-live-p (cdr cell))
-					 (cdr cell))))
-				 (chess-game-hooks chess-game))))))
-	  (call-interactively lb-command))
-      (fset 'buffer-list buffer-list-func))))
+  (let ((chess-game chess-module-game)
+        (lb-command (lookup-key ctl-x-map [(control ?b)])))
+    ;; FIXME: Running "whatever code is bound to `C-x b'" (which could really
+    ;; be anything, if the user is using a completely different key layout, as
+    ;; in Evil, ErgoEmacs, or whatnot) while rebinding buffer-list is
+    ;; pretty risky!
+    (cl-letf (((symbol-function 'buffer-list)
+               (lambda (&optional _frame)
+                 (delq nil
+                       (mapcar (function
+                                (lambda (cell)
+                                  (and (bufferp (cdr cell))
+                                       (buffer-live-p (cdr cell))
+                                       (cdr cell))))
+                               (chess-game-hooks chess-game))))))
+      (call-interactively lb-command))))
 
 (chess-message-catalog 'english
   '((return-to-current . "Use '>' to return to the current position")))
@@ -1025,10 +1028,6 @@ to the end or beginning."
 ;;
 ;; chess-display-edit-mode (for editing the position directly)
 ;;
-
-(defvar chess-display-edit-position nil)
-
-(make-variable-buffer-local 'chess-display-edit-position)
 
 (defvar chess-display-edit-mode-map
   (let ((map (make-keymap)))
@@ -1253,15 +1252,12 @@ Clicking once on a piece selects it; then click on the target location."
 (defun chess-display-mouse-select-piece (event)
   "Select the piece the user clicked on."
   (interactive "e")
-  (if (fboundp 'event-window)		; XEmacs
+  (if (featurep 'xemacs)
       (progn
 	(set-buffer (window-buffer (event-window event)))
 	(and (event-point event) (goto-char (event-point event))))
-    (if (equal (event-start event) (event-end event))
-	(progn
-	  (set-buffer (window-buffer (posn-window (event-start event))))
-	  (goto-char (posn-point (event-start event))))
-      (goto-char (posn-point (event-end event)))))
+    (set-buffer (window-buffer (posn-window (event-end event))))
+    (goto-char (posn-point (event-end event))))
   (chess-display-select-piece))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -52,34 +52,27 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (require 'chess-message)
+(require 'chess-ply)
 (require 'chess-pos)
 
-(defconst chess-algebraic-pieces-regexp "[RNBKQ]")
-
-;; jww (2008-09-01): use rx here, like in chess-ics
 (defconst chess-algebraic-regexp
-  (format (concat "\\("
-		    "O-O\\(-O\\)?\\|"
-		    "\\(%s?\\)/?"	; what is the / doing here?
-		    "\\([a-h]?[1-8]?\\)"
-		    "\\([x-]?\\)"
-		    "\\([a-h][1-8]\\)"
-		    "\\(=\\(%s\\)\\)?"
-		  "\\)"
-		  "\\([#+]\\)?")
-	  chess-algebraic-pieces-regexp
-	  chess-algebraic-pieces-regexp)
+  (rx (group (or (or "O-O" "O-O-O")
+		 (and (optional (group (char ?N ?B ?R ?Q ?K)))
+		      (optional (char ?/))
+		      (group (optional (char "a-h")) (optional (char "1-8")))
+		      (optional (group (char ?- ?x)))
+		      (group (char "a-h") (char "1-8"))
+		      (optional (group ?= (group (char ?N ?B ?R ?Q ?K)))))))
+      (optional (group (char ?+ ?#))))
   "A regular expression that matches all possible algebraic moves.
 This regexp handles both long and short form.")
 
-(defconst chess-algebraic-regexp-entire
-  (concat chess-algebraic-regexp "$"))
+(defconst chess-algebraic-regexp-entire (concat chess-algebraic-regexp "$"))
 
-(defconst chess-algebraic-regexp-ws
-  (concat chess-algebraic-regexp "\\s-"))
+(defconst chess-algebraic-regexp-ws (concat chess-algebraic-regexp "\\s-"))
 
 (chess-message-catalog 'english
   '((clarify-piece     . "Clarify piece to move by rank or file")
@@ -90,22 +83,22 @@ This regexp handles both long and short form.")
 
 (defun chess-algebraic-to-ply (position move &optional trust)
   "Convert the algebraic notation MOVE for POSITION to a ply."
-  (assert (vectorp position))
-  (assert (stringp move))
+  (cl-assert (vectorp position))
+  (cl-assert (stringp move))
   (let ((case-fold-search nil))
     (when (string-match chess-algebraic-regexp-entire move)
       (let ((color (chess-pos-side-to-move position))
-	    (mate (match-string 9 move))
+	    (mate (match-string 8 move))
 	    (piece (aref move 0))
 	    changes long-style)
 	(if (eq piece ?O)
 	    (setq changes (chess-ply-castling-changes
 			   position (= (length (match-string 1 move)) 5)))
-	  (let ((promotion (match-string 8 move)))
+	  (let ((promotion (match-string 7 move)))
 	    (setq
 	     changes
-	     (let ((source (match-string 4 move))
-		   (target (chess-coord-to-index (match-string 6 move))))
+	     (let ((source (match-string 3 move))
+		   (target (chess-coord-to-index (match-string 5 move))))
 	       (if (and source (= (length source) 2))
 		   (prog1
 		       (list (chess-coord-to-index source) target)
@@ -142,8 +135,8 @@ This regexp handles both long and short form.")
 			       (chess-error 'could-not-clarify)
 			     (list which target))))
 		     (chess-error 'no-candidates move))))))
-	    (if promotion
-		(nconc changes (list :promote (aref promotion 0))))))
+	    (when promotion
+	      (nconc changes (list :promote (aref promotion 0))))))
 
 	(when changes
 	  (if (and trust mate)
@@ -167,7 +160,6 @@ This regexp handles both long and short form.")
 	  (from (chess-ply-source ply))
 	  (to (chess-ply-target ply))
 	  (from-piece (chess-pos-piece pos from))
-	  (color (chess-pos-side-to-move pos))
 	  (rank 0) (file 0)
 	  (from-rank (chess-index-rank from))
 	  (from-file (chess-index-file from))
@@ -176,10 +168,10 @@ This regexp handles both long and short form.")
 	  (let ((candidates (chess-search-position pos to from-piece nil t)))
 	    (when (> (length candidates) 1)
 	      (dolist (candidate candidates)
-		(if (= (/ candidate 8) from-rank)
-		    (setq rank (1+ rank)))
-		(if (= (mod candidate 8) from-file)
-		    (setq file (1+ file))))
+		(when (= (chess-index-rank candidate) from-rank)
+		  (setq rank (1+ rank)))
+		(when (= (chess-index-file candidate) from-file)
+		  (setq file (1+ file))))
 	      (cond
 	       ((= file 1)
 		(setq differentiator (+ from-file ?a)))
@@ -190,16 +182,12 @@ This regexp handles both long and short form.")
 	(concat
 	 (unless (= (upcase from-piece) ?P)
 	   (char-to-string (upcase from-piece)))
-	 (if long
-	     (chess-index-to-coord from)
-	   (if differentiator
-	       (prog1
-		   (char-to-string differentiator)
-		 (chess-ply-changes ply))
-	     (if (and (not long) (= (upcase from-piece) ?P)
-		      (/= (chess-index-file from)
-			  (chess-index-file to)))
-		 (char-to-string (+ (chess-index-file from) ?a)))))
+	 (cond
+	  (long (chess-index-to-coord from))
+	  (differentiator (char-to-string differentiator))
+	  ((and (not long) (= (upcase from-piece) ?P)
+		(/= from-file (chess-index-file to)))
+	   (char-to-string (+ from-file ?a))))
 	 (if (or (/= ?  (chess-pos-piece pos to))
 		 (chess-ply-keyword ply :en-passant))
 	     "x" (if long "-"))
@@ -213,7 +201,7 @@ This regexp handles both long and short form.")
 (defun chess-ply-to-algebraic (ply &optional long)
   "Convert the given PLY to algebraic notation.
 If LONG is non-nil, render the move into long notation."
-  (assert (listp ply))
+  (cl-assert (listp ply))
   (or (and (not long) (chess-ply-keyword ply :san))
       (and (null (chess-ply-source ply)) "")
       (let ((move (chess-ply--move-text ply long)))

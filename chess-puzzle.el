@@ -1,6 +1,6 @@
 ;;; chess-puzzle.el --- Support for viewing and solving chess puzzles
 
-;; Copyright (C) 2002, 2004, 2008  Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2004, 2008, 2014  Free Software Foundation, Inc.
 
 ;; Author: John Wiegley <johnw@gnu.org>
 ;; Maintainer: Mario Lang <mlang@delysid.org>
@@ -27,9 +27,13 @@
 
 ;;; Code:
 
+(require 'chess)
+(require 'chess-algebraic)
+(require 'chess-database)
+(require 'chess-display)
+(require 'chess-engine)
 (require 'chess-game)
 (require 'chess-random)
-(require 'chess-database)
 
 (defgroup chess-puzzle nil
   "A mode for playing games from a database of puzzles."
@@ -51,7 +55,7 @@
     (end-of-puzzles . "There are no more puzzles in this collection")))
 
 ;;;###autoload
-(defun chess-puzzle (file &optional index)
+(defun chess-puzzle (file &optional index) ;FIXME: index not used!
   "Pick a random puzzle from FILE, and solve it against the default engine.
 The spacebar in the display buffer is bound to `chess-puzzle-next',
 making it easy to go on to the next puzzle once you've solved one."
@@ -79,6 +83,8 @@ making it easy to go on to the next puzzle once you've solved one."
 	  (setq chess-puzzle-position 0))
 	(chess-game-run-hooks (chess-display-game display) 'disable-autosave)
 	(chess-puzzle-next)))))
+
+(defvar chess-display-handling-event)
 
 (defun chess-puzzle-next ()
   "Play the next puzzle in the collection, selected randomly."
@@ -111,14 +117,14 @@ making it easy to go on to the next puzzle once you've solved one."
 	(when (or bm pv)
 	  (message "Best move %s %s%s"
 		   (if (zerop (chess-game-index game)) "is" "would have been")
-		   (chess-ply-to-string (car bm))
+		   (chess-ply-to-algebraic (car bm))
 		   (if pv
 		       (concat ", predicted variation "
 			       (chess-var-to-algebraic pv))
 		     "")))))))
 
 
-(defun chess-puzzle-handler (game display event &rest args)
+(defun chess-puzzle-handler (game display event &rest _args)
   (if (and (eq event 'move)
 	   (chess-game-over-p game))
       (with-current-buffer display

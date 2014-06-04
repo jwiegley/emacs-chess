@@ -466,8 +466,6 @@ See `chess-ics-game'.")
 	     (chess-session 'chess-ics))
 	   chess-ics-sessions)
      (cl-assert (caar chess-ics-sessions))
-     (with-current-buffer (caar chess-ics-sessions)
-       (setq chess-ply-allow-interactive-query t))
      (let ((game (chess-engine-game (caar chess-ics-sessions))))
        (chess-game-set-data game 'ics-game-number game-number)
        (chess-game-set-data game 'ics-buffer (current-buffer))
@@ -645,8 +643,7 @@ See `chess-ics-game'.")
 				  index (chess-game-index game))))))
 	    ;; no preceeding ply supplied, so this is a starting position
 	    (let ((chess-game-inhibit-events t)
-		  (color (chess-pos-side-to-move position))
-		  plies)
+		  (color (chess-pos-side-to-move position)))
 	      (when (or (= 1 status) (= -1 status))
 		(chess-game-set-data game 'my-color (if (= 1 status)
 							color (not color)))
@@ -1051,17 +1048,19 @@ This function should be put on `comint-preoutput-filter-functions'."
        nil (format "match %s\n"
 		   (read-string (chess-string 'challenge-whom)))))
 
-     ;; this handler is taken from chess-common; we need to send long
-     ;; algebraic notation to the ICS server, not short
+     ;; we need to send long algebraic notation to the ICS server, not short
      ((eq event 'move)
-      (chess-ics-send
-       (if (chess-ply-any-keyword (car args) :castle :long-castle)
-	   (chess-ply-to-algebraic (car args))
-	 (concat (chess-index-to-coord
-		  (chess-ply-source (car args))) "-"
-		  (chess-index-to-coord
-		   (chess-ply-target (car args)))))
-       (chess-game-data game 'ics-buffer))
+      (let ((ply (car args)))
+	(chess-ics-send
+	 (if (chess-ply-any-keyword ply :castle :long-castle)
+	     (chess-ply-to-algebraic ply)
+	   (concat (chess-index-to-coord (chess-ply-source ply))
+		   "-"
+		   (chess-index-to-coord (chess-ply-target ply))
+		   (if (characterp (chess-ply-keyword ply :promote))
+		       (format "=%c" (chess-ply-keyword ply :promote))
+		     "")))
+	 (chess-game-data game 'ics-buffer)))
       (if (chess-game-over-p game)
 	  (chess-game-set-data game 'active nil)))
 

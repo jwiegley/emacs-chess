@@ -59,11 +59,9 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (require 'chess-pos)
-(require 'chess-algebraic)
 
 (defgroup chess-ply nil
   "Routines for manipulating chess plies."
@@ -71,34 +69,34 @@
 
 (defsubst chess-ply-pos (ply)
   "Returns the base position associated with PLY."
-  (assert (listp ply))
+  (cl-assert (listp ply))
   (car ply))
 
 (defsubst chess-ply-set-pos (ply position)
   "Set the base position of PLY."
-  (assert (listp ply))
-  (assert (vectorp position))
+  (cl-assert (listp ply))
+  (cl-assert (vectorp position))
   (setcar ply position))
 
 (defsubst chess-ply-changes (ply)
-  (assert (listp ply))
+  (cl-assert (listp ply))
   (cdr ply))
 
 (defsubst chess-ply-set-changes (ply changes)
-  (assert (listp ply))
-  (assert (listp changes))
+  (cl-assert (listp ply))
+  (cl-assert (listp changes))
   (setcdr ply changes))
 
 (defun chess-ply-any-keyword (ply &rest keywords)
-  (assert (listp ply))
+  (cl-assert (listp ply))
   (catch 'found
     (dolist (keyword keywords)
       (if (memq keyword (chess-ply-changes ply))
 	  (throw 'found keyword)))))
 
 (defun chess-ply-keyword (ply keyword)
-  (assert (listp ply))
-  (assert (symbolp keyword))
+  (cl-assert (listp ply))
+  (cl-assert (symbolp keyword))
   (let ((item (memq keyword (chess-ply-changes ply))))
     (if item
 	(if (eq item (last (chess-ply-changes ply)))
@@ -106,8 +104,8 @@
 	  (cadr item)))))
 
 (defun chess-ply-set-keyword (ply keyword &optional value)
-  (assert (listp ply))
-  (assert (symbolp keyword))
+  (cl-assert (listp ply))
+  (cl-assert (symbolp keyword))
   (let* ((changes (chess-ply-changes ply))
 	 (item (memq keyword changes)))
     (if item
@@ -120,35 +118,26 @@
 
 (defsubst chess-ply-source (ply)
   "Returns the source square index value of PLY."
-  (assert (listp ply))
+  (cl-assert (listp ply))
   (let ((changes (chess-ply-changes ply)))
     (and (listp changes) (not (symbolp (car changes)))
 	 (car changes))))
 
 (defsubst chess-ply-target (ply)
   "Returns the target square index value of PLY."
-  (assert (listp ply))
+  (cl-assert (listp ply))
   (let ((changes (chess-ply-changes ply)))
     (and (listp changes) (not (symbolp (car changes)))
 	 (cadr changes))))
 
 (defsubst chess-ply-next-pos (ply)
-  (assert (listp ply))
+  (cl-assert (listp ply))
   (or (chess-ply-keyword ply :next-pos)
       (let ((position (apply 'chess-pos-move
 			     (chess-pos-copy (chess-ply-pos ply))
 			     (chess-ply-changes ply))))
 	(chess-pos-set-preceding-ply position ply)
 	(chess-ply-set-keyword ply :next-pos position))))
-
-(defsubst chess-ply-to-string (ply &optional long)
-  (assert (listp ply))
-  (chess-ply-to-algebraic ply long))
-
-(defsubst chess-ply-from-string (position move)
-  (assert (vectorp position))
-  (assert (stringp move))
-  (chess-algebraic-to-ply position move))
 
 (defconst chess-piece-name-table
   '(("queen"  . ?q)
@@ -158,7 +147,7 @@
 
 (defun chess-ply-castling-changes (position &optional long king-index)
   "Create castling changes; this function supports Fischer Random castling."
-  (assert (vectorp position))
+  (cl-assert (vectorp position))
   (let* ((color (chess-pos-side-to-move position))
 	 (king (or king-index (chess-pos-king-index position color)))
 	 (rook (chess-pos-can-castle position (if color
@@ -179,14 +168,12 @@
 		(if long :long-castle :castle))))))
 
 (chess-message-catalog 'english
-  '((pawn-promote-query  . "Promote to queen? ")
-    (ambiguous-promotion . "Promotion without :promote keyword")))
+  '((ambiguous-promotion . "Promotion without :promote keyword")))
 
 (defvar chess-ply-checking-mate nil)
-(defvar chess-ply-allow-interactive-query nil)
 
 (defsubst chess-ply-create* (position)
-  (assert (vectorp position))
+  (cl-assert (vectorp position))
   (list position))
 
 (defun chess-ply-create (position &optional valid-p &rest changes)
@@ -197,7 +184,7 @@ also extend castling, and will prompt for a promotion piece.
 
 Note: Do not pass in the rook move if CHANGES represents a castling
 maneuver."
-  (assert (vectorp position))
+  (cl-assert (vectorp position))
   (let* ((ply (cons position changes))
 	 (color (chess-pos-side-to-move position))
 	 piece)
@@ -231,21 +218,12 @@ maneuver."
 		    (setcdr ply new-changes)))
 
 	    (when (eq piece (if color ?P ?p))
-	      ;; is this a pawn move to the ultimate rank?  if so, and
-	      ;; we haven't already been told, ask for the piece to
-	      ;; promote it to
+	      ;; is this a pawn move to the ultimate rank?  if so, check
+	      ;; that the :promote keyword is present.
 	      (when (and (not (memq :promote changes))
 			 (= (if color 0 7)
 			    (chess-index-rank (cadr changes))))
-		;; This does not always clear ALL input events
-		(discard-input) (sit-for 0) (sleep-for 0 1)
-		(discard-input)
-		(unless chess-ply-allow-interactive-query
-		  (chess-error 'ambiguous-promotion))
-		(let ((new-piece (if (yes-or-no-p
-				      (chess-string 'pawn-promote-query))
-				     ?Q ?N)))
-		  (nconc changes (list :promote (upcase new-piece)))))
+		(chess-error 'ambiguous-promotion))
 
 	      ;; is this an en-passant capture?
 	      (when (let ((ep (chess-pos-en-passant position)))
@@ -296,38 +274,28 @@ maneuver."
       (chess-ply-any-keyword (chess-pos-preceding-ply
 			      (chess-ply-pos ply)) :stalemate :checkmate)))
 
-(eval-when-compile
-  (defvar position)
-  (defvar candidate)
-  (defvar color)
-  (defvar plies)
-  (defvar specific-target))
-
 (defvar chess-ply-throw-if-any nil)
 
-(defsubst chess-ply--add (rank-adj file-adj &optional pos)
+(defmacro chess-ply--add (rank-adj file-adj &optional pos)
   "This is totally a shortcut."
-  (let ((target (or pos (chess-incr-index candidate rank-adj file-adj))))
+  `(let ((target (or ,pos (chess-incr-index candidate ,rank-adj ,file-adj))))
     (if (and (or (not specific-target)
 		 (= target specific-target))
 	     (chess-pos-legal-candidates position color target
 					 (list candidate)))
 	(if chess-ply-throw-if-any
 	    (throw 'any-found t)
-	  (if (not chess-ply-allow-interactive-query)
-	      (let ((promotion (and (chess-pos-piece-p position candidate
-							(if color ?P ?p))
-				     (= (chess-index-rank target)
-					(if color 0 7)))))
-		(if promotion
-		    (dolist (promote '(?Q ?R ?B ?N))
-		      (let ((ply (chess-ply-create position t candidate target
-						   :promote promote)))
-			(when ply (push ply plies))))
-		  (let ((ply (chess-ply-create position t candidate target)))
-		    (when ply (push ply plies)))))
-	    (let ((ply (chess-ply-create position t candidate target)))
-	      (when ply (push ply plies))))))))
+	  (let ((promotion (and (chess-pos-piece-p position candidate
+						   (if color ?P ?p))
+				(= (chess-index-rank target)
+				   (if color 0 7)))))
+	    (if promotion
+		(dolist (promote '(?Q ?R ?B ?N))
+		  (let ((ply (chess-ply-create position t candidate target
+					       :promote promote)))
+		    (when ply (push ply plies))))
+	      (let ((ply (chess-ply-create position t candidate target)))
+		(when ply (push ply plies)))))))))
 
 (defun chess-legal-plies (position &rest keywords)
   "Return a list of all legal plies in POSITION.
@@ -346,7 +314,7 @@ criteria.
 
 NOTE: All of the returned plies will reference the same copy of the
 position object passed in."
-  (assert (vectorp position))
+  (cl-assert (vectorp position))
   (cond
    ((null keywords)
     (let ((plies (list t)))
@@ -398,8 +366,7 @@ position object passed in."
 	 ;; pawn movement, which is diagonal 1 when taking, but forward
 	 ;; 1 or 2 when moving (the most complex piece, actually)
 	 ((= test-piece ?P)
-	  (let* ((bias  (if color -1 1))
-		 (ahead (chess-next-index candidate (if color
+	  (let* ((ahead (chess-next-index candidate (if color
 							chess-direction-north
 						      chess-direction-south)))
 		 (2ahead (when ahead (chess-next-index ahead (if color

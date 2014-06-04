@@ -76,7 +76,6 @@
 	      ;; We can translate this information to EPD opcodes
 	      (let ((depth (read (match-string 1)))
 		    (centipawn (read (match-string 2)))
-		    (nodes (match-string 4))
 		    (pos (chess-engine-position nil)))
 		(chess-pos-set-epd pos 'acd depth)
 		(chess-pos-set-epd pos 'ce centipawn)
@@ -164,10 +163,10 @@
 	    (chess-engine-send nil "hard\n")
 	  (chess-engine-send nil "easy\n")))
        ((eq (car args) 'search-depth)
-	(assert (and (integerp (cadr args)) (>= (cadr args) 0)))
+	(cl-assert (and (integerp (cadr args)) (>= (cadr args) 0)))
 	(chess-engine-send nil (format "sd %d\n" (cadr args))))
        ((eq (car args) 'search-time)
-	(assert (and (integerp (cadr args)) (> (cadr args) 0)))
+	(cl-assert (and (integerp (cadr args)) (> (cadr args) 0)))
 	(chess-engine-send nil (format "st %d\n" (cadr args))))))
 
      (t

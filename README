@@ -23,3 +23,9 @@ files.
 To improve your chessaility, you might also like to have a look at
 chess-puzzle, which allows you to solve chess puzzle collections (in
 PGN or EPD format) against one of the engines you have installed.
+
+
+These days, chess.el is maintained as part of GNU ELPA, the Emacs Lisp
+Package Repository.  Use `M-x list-packages RET' to show information about,
+and install, the current version.
+

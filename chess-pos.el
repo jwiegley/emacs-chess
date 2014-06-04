@@ -84,8 +84,8 @@
 ;;; Code:
 
 (require 'chess-message)
+(require 'cl-lib)
 (eval-when-compile
-  (require 'cl-lib)
   (cl-proclaim '(optimize (speed 3) (safety 2))))
 
 (defgroup chess-pos nil
@@ -294,28 +294,26 @@ color will do."
   (cl-check-type file (integer 0 7))
   (+ (* 8 rank) file))
 
-(defsubst chess-coord-to-index (coord)
-  "Convert a COORD string into an index value."
-  (cl-assert (stringp coord))
-  (cl-assert (= (length coord) 2))
-  (+ (* 8 (- 7 (- (aref coord 1) ?1)))
-     (- (aref coord 0) ?a)))
-
-(defsubst chess-index-to-coord (index)
-  "Convert the chess position INDEX into a coord string."
-  (cl-assert (and (>= index 0) (< index 64)))
-  (concat (char-to-string (+ (mod index 8) ?a))
-	  (char-to-string (+ (- 7 (/ index 8)) ?1))))
-
 (defsubst chess-index-rank (index)
   "Return the rank component of the given INDEX."
-  (cl-assert (and (>= index 0) (< index 64)))
+  (cl-check-type index (integer 0 63))
   (/ index 8))
 
 (defsubst chess-index-file (index)
   "Return the file component of the given INDEX."
-  (cl-assert (and (>= index 0) (< index 64)))
+  (cl-check-type index (integer 0 63))
   (mod index 8))
+
+(defsubst chess-coord-to-index (coord)
+  "Convert a COORD string (such as \"e4\" into an index value."
+  (cl-assert (stringp coord))
+  (cl-assert (= (length coord) 2))
+  (chess-rf-to-index (- 7 (- (aref coord 1) ?1)) (- (aref coord 0) ?a)))
+
+(defsubst chess-index-to-coord (index)
+  "Convert the chess position INDEX into a coord string."
+  (cl-check-type index (integer 0 63))
+  (string (+ (chess-index-file index) ?a) (+ (- 7 (chess-index-rank index)) ?1)))
 
 (defsubst chess-incr-index (index rank-move file-move)
   "Create a new INDEX from an old one, by adding RANK-MOVE and FILE-MOVE."
@@ -705,7 +703,7 @@ Optionally, if INDICES is non-nil those indices are considered as candidates.
 A Pawn whose advance to the eighth rank is not blocked by an
 opposing Pawn in the same file and who does not have to pass one
 on an adjoining file is called a passed Pawn."
-  (let ((seventh (if color 1 6)) (bias (if color -1 1)) (pawn (if color ?p ?P))
+  (let ((seventh (if color 1 6)) (pawn (if color ?p ?P))
 	pawns)
     (dolist (index (or pawn-indices
 		       (chess-pos-search position (if color ?P ?p))) pawns)
@@ -834,14 +832,10 @@ trying to move a blank square."
 (chess-message-catalog 'english
   '((piece-unrecognized . "Unrecognized piece identifier")))
 
-(eval-when-compile
-  (defvar candidates)
-  (defvar check-only))
-
-(defsubst chess--add-candidate (candidate)
-  (if check-only
-      (throw 'in-check t)
-    (push candidate candidates)))
+(defmacro chess--add-candidate (candidate)
+  `(if check-only
+       (throw 'in-check t)
+     (push ,candidate candidates)))
 
 (defconst chess-white-can-slide-to
   (let ((squares (make-vector 64 nil)))
@@ -899,7 +893,7 @@ If NO-CASTLING is non-nil, do not consider castling moves."
 		  piece))
 	 (test-piece (and (characterp piece)
 			  (upcase piece)))
-	 p pos candidates)
+         pos candidates)
     (cond
      ;; if the piece is `t', it means to find the candidates resulting
      ;; from any piece movement.  This is useful for testing whether a
@@ -917,8 +911,8 @@ If NO-CASTLING is non-nil, do not consider castling moves."
 
       ;; test for knights and pawns
       (dolist (p (if piece '(?P ?N) '(?p ?n)))
-	(mapc 'chess--add-candidate
-	      (chess-search-position position target p check-only no-castling)))
+	(dolist (cand (chess-search-position position target p check-only no-castling))
+          (chess--add-candidate cand)))
 
       ;; test whether the rook or king can move to the target by castling
       (unless no-castling

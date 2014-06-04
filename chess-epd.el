@@ -33,6 +33,7 @@
 
 ;;; Code:
 
+(require 'chess-algebraic)
 (require 'chess-fen)
 (require 'chess-game)
 (require 'chess-ply)
@@ -44,11 +45,11 @@
 	(value (cdr annotation)))
     (cond
      ((or (eq opcode 'am) (eq opcode 'bm))
-      (assert (consp value))
+      (cl-assert (consp value))
       (format "%S %s;"
-	      opcode (mapconcat #'chess-ply-to-string value " ")))
+	      opcode (mapconcat #'chess-ply-to-algebraic value " ")))
      ((eq opcode 'ce)
-      (assert (integerp value))
+      (cl-assert (integerp value))
       (format "%S %d;" opcode value))
      ((or (eq opcode 'pv) (eq opcode 'sv))
       (format "%S %s;"
@@ -59,7 +60,7 @@
 (defun chess-pos-to-epd (position)
   "Convert a chess POSITION to a string representation in extended
 position description format."
-  (assert position)
+  (cl-assert position)
   (concat (chess-pos-to-fen position)
 	  (when (consp (chess-pos-annotations position))
 	    (concat " "
@@ -116,16 +117,16 @@ and advance point after the correctly parsed position."
 		       (cond
 			((or (eq opcode 'am) (eq opcode 'bm))
 			 (mapcar (lambda (move)
-				   (chess-ply-from-string pos move))
+				   (chess-algebraic-to-ply pos move))
 				 (split-string val " ")))
 			((eq opcode 'ce)
 			 (read val))
 			((or (eq opcode 'pm) (eq opcode 'sm)) ;predicted/supplied move
-			 (chess-ply-from-string pos val))
+			 (chess-algebraic-to-ply pos val))
 			((or (eq opcode 'pv) (eq opcode 'sv)) ; predicted/supplied variation
 			 (let ((var (chess-var-create pos)))
 			   (mapc (lambda (ply)
-				   (let ((changes (chess-ply-from-string
+				   (let ((changes (chess-algebraic-to-ply
 						   (chess-var-pos var) ply)))
 				     (if changes
 					 (chess-var-move var changes)
