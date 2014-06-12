@@ -1,26 +1,9 @@
 \input texinfo  @c -*-texinfo-*-
 
-@c Documentation for Chess.el.
-@c Copyright (C) 2001, 2002 John Wiegley.
-
-@c This file is free software; you can redistribute it and/or modify it
-@c under the terms of the GNU General Public License as published by the
-@c Free Software Foundation; either version 2 of the License, or (at
-@c your option) any later version.
-
-@c This file is distributed in the hope that it will be useful, but
-@c WITHOUT ANY WARRANTY; without even the implied warraonty of
-@c MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-@c General Public License for more details.
-
-@c You should have received a copy of the GNU General Public License
-@c along with Eshell; see the file COPYING.  If not, write to the Free
-@c Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-@c %**start of header
-@setfilename chess.info
+@setfilename ../chess.info
+@documentencoding UTF-8
+@documentlanguage en
 @settitle Emacs Chess: chess.el
-@c %**end of header
 
 @dircategory Emacs
 @direntry
@@ -29,10 +12,10 @@
 @setchapternewpage on
 
 @ifinfo
-Copyright @copyright{} 2001, 2002 John Wiegley.
+Copyright @copyright{} 2001, 2002, 2014 Free Software Foundation, @abbr{Inc.}
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
+under the terms of the @acronym{GNU} Free Documentation License, Version 1.1 or
 any later version published by the Free Software Foundation.
 @end ifinfo
 
@@ -52,17 +35,17 @@ any later version published by the Free Software Foundation.
 @c -release-
 @end ignore
 @sp 3
-@center John Wiegley
+@center John Wiegley and Mario Lang
 @c -date-
 
 @c  The following two commands start the copyright page for the printed
 @c  manual.  This will not appear in the Info file.
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2001, 2002 John Wiegley.
+Copyright @copyright{} 2001, 2002, 2014 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
+under the terms of the @acronym{GNU} Free Documentation License, Version 1.1 or
 any later version published by the Free Software Foundation.
 @end titlepage
 
@@ -87,61 +70,68 @@ structured for use as a library, and also how to use it as a client.
 @end ifinfo
 
 @menu
-* The chess.el library::        
-* Modules::                     
-* Chessboard displays::         
-* Engines::                     
-* Internet Chess Servers::      
-* Concept Index::               
-* Function and Variable Index::  
-* Key Index::                   
+* The chess.el library::        Basic objects required to deal with Chess
+* Modules::                     The module-system explained
+* Chessboard displays::         Different types of chessboards in a buffer
+* Engines::                     Internal and external chess-playing engines
+* Chess Session::               Tying it all together
+* Internet Chess Servers::      Playing chess with other people
+* Concept Index::
+* Function and Variable Index::
+* Key Index::
 @end menu
 
 @node The chess.el library, Modules, Top, Top
 @chapter The chess.el library
 @cindex library
 
+  This chapter documents the low-level aspects of chess.el, mostly targeting
+developers interested in understanding the underlying @acronym{API}s@.
+
+@ref{Chessboard displays} and following chapters
+if you are interested in the more user-visible aspects of chess.el.
+
 @menu
-* Positions::                   
-* Plies::                       
-* Variations::                  
-* Games::                       
-* Collections::                 
+* Positions::
+* Plies::
+* Variations::
+* Games::
+* Collections::
+* Chess Opening Books::
 @end menu
 
 @node Positions, Plies, The chess.el library, The chess.el library
 @section Positions
+@cindex position
 
 A chess @dfn{position} is a given layout of pieces on a chess board,
 also reflecting which side is next to move, and what privileges are
 currently available to each side (castling short or long, en passant
 capture, etc).
 
-A position may be represented in ASCII using FEN (or EPD) notation, or
+A position may be represented in @acronym{ASCII} using @acronym{FEN} (or EPD), or
 graphically by displaying a chess board.  It is rather inconvenient to
 render them verbally.
 
 The position can be represented on a remote terminal using X windows, or
-by transmitting the FEN string via a network connection, or clipboard,
+by transmitting the @acronym{FEN} string via a network connection, or clipboard,
 to another chess board rendering tool.  It may of course also be
-represented physically, by setting up the pieces to match the FEN
-notation.
+represented physically, by setting up the pieces to match the @acronym{FEN}
+specification.
 
 Chess puzzles are most often provided as a set of positions.
 
 @menu
-* Creating positions::          
-* Position coordinates::        
-* Position details::            
-* Annotations::                 
-* FEN notation::                
-* EPD notation::                
+* Creating positions::
+* Position coordinates::
+* Position details::
+* Annotations::
+* FEN notation::
+* EPD notation::
 @end menu
 
 @node Creating positions, Position coordinates, Positions, Positions
 @subsection Creating positions
-
-@c lispfun chess-pos-create
 
 @defun chess-pos-create &optional blank
 Create a new chess position, set at the starting position.
@@ -149,11 +139,9 @@ If @var{blank} is non-nil, all of the squares will be empty.
 The current side-to-move is always white.
 @end defun
 
-@c lispfun chess-pos-copy
-
 @defun chess-pos-copy position
 Copy the given chess @var{position}.
-If there are annotations or @var{epd} opcodes set, these lists are copied as
+If there are annotations or @acronym{EPD} opcodes set, these lists are copied as
 well, so that the two positions do not share the same lists.
 @end defun
 
@@ -161,59 +149,101 @@ well, so that the two positions do not share the same lists.
 Starting position of a chess game.
 @end defvar
 
-@c lispfun chess-fischer-random-position
-
 @defun chess-fischer-random-position 
 Generate a Fischer Random style position.
 @end defun
 
 @node Position coordinates, Position details, Creating positions, Positions
 @subsection Position coordinates
+@cindex cooridnates
 
 First of all, a coordinate system of octal indices is
 used, where ?\044 signifies rank 4 file 4 (i.e., "e4").  Rank is
 numbered 0 to 7, top to bottom, and file is 0 to 7, left to right.
 
-@c lispfun chess-index-rank
-
 @defun chess-index-rank index
 Return the rank component of the given @var{index}.
 @end defun
-
-@c lispfun chess-index-file
 
 @defun chess-index-file index
 Return the file component of the given @var{index}.
 @end defun
 
-@c lispfun chess-rf-to-index
-
 @defun chess-rf-to-index rank file
 Convert @var{rank} and @var{file} coordinates into an octal index.
 @end defun
 
-For those who wish to use ASCII coordinates, such as "e4", there
+For those who wish to use @acronym{ASCII} coordinates, such as "e4", there
 are two conversion functions:
-
-@c lispfun chess-coord-to-index
 
 @defun chess-coord-to-index coord
 Convert a @var{coord} string into an index value.
 @end defun
 
-@c lispfun chess-index-to-coord
-
 @defun chess-index-to-coord index
 Convert the chess position @var{index} into a coord string.
 @end defun
 
-There is also one helper function for iterative changes of an index:
+For fast manipulation of chess position indices, the following
+constants and functions are provided:
 
-@c lispfun chess-incr-index
+@cindex queen
+@cindex rook
+For queens and rooks:
 
-@defun chess-incr-index index rank-move file-move
-Create a new @var{index} from an old one, by adding @var{rank-move} and @var{file-move}.
+@cindex north
+@defvr Constant chess-direction-north
+Signify one step north, as seen from the perspective of the white player.
+@end defvr
+
+@cindex east
+@defvr Constant chess-direction-east
+Signify one step east, as seen from the perspective of the white player.
+@end defvr
+
+@cindex south
+@defvr Constant chess-direction-south
+Signify one step south, as seen from the perspective of the white player.
+@end defvr
+
+@cindex west
+@defvr Constant chess-direction-west
+Signify one step west, as seen from the perspective of the white player.
+@end defvr
+
+@cindex queen
+@cindex bishop
+For queens and bishops:
+
+@cindex northeast
+@defvr Constant chess-direction-northeast
+Signify one step northeast, as seen from the perspective of the white player.
+@end defvr
+
+@cindex southeast
+@defvr Constant chess-direction-southeast
+Signify one step southeast, as seen from the perspective of the white player.
+@end defvr
+
+@cindex southwest
+@defvr Constant chess-direction-southwest
+Signify one step southwest, as seen from the perspective of the white player.
+@end defvr
+
+@cindex northwest
+@defvr Constant chess-direction-northwest
+Signify one step northwest, as seen from the perspective of the white player.
+@end defvr
+
+@defun chess-next-index index direction
+Create a new @var{index} from an old one, by advancing it into @var{direction}.
+If the resulting index is not valid (outside the board), nil is returned.
 @end defun
+
+Due to the underlying technique used to efficiently detect off-board squares,
+a direction specifier should at most do two steps in any direction.
+Directions can be combined, so that @code{(* chess-direction-north 2)}
+will give a typical initial white pawn push.
 
 @node Position details, Annotations, Position coordinates, Positions
 @subsection Position details
@@ -221,13 +251,9 @@ Create a new @var{index} from an old one, by adding @var{rank-move} and @var{fil
 With an octal index value, you can look up what's on a particular
 square, or set that square's value:
 
-@c lispfun chess-pos-piece
-
 @defun chess-pos-piece position index
 Return the piece on @var{position} at @var{index}.
 @end defun
-
-@c lispfun chess-pos-piece-p
 
 @defun chess-pos-piece-p position index piece-or-color
 Return non-nil if at @var{position}/@var{index} there is the given @var{piece-or-color}.
@@ -235,15 +261,11 @@ If @var{piece-or-color} is t for white or nil for black, any piece of that
 color will do.
 @end defun
 
-@c lispfun chess-pos-set-piece
-
 @defun chess-pos-set-piece position index piece
 Set the piece on @var{position} at @var{index} to @var{piece}.
-@var{piece} must be one of K Q N B R or P.  Use lowercase to set black
-pieces.
+@var{piece} must be one of @code{?K} @code{?Q} @code{?N} @code{?B}
+@code{?R} or @code{?P}.  Use lowercase to set black pieces.
 @end defun
-
-@c lispfun chess-pos-search
 
 @defun chess-pos-search position piece-or-color
 Look on @var{position} anywhere for @var{piece-or-color}, returning all coordinates.
@@ -251,7 +273,13 @@ If @var{piece-or-color} is t for white or nil for black, any piece of that
 color will do.
 @end defun
 
-@c lispfun chess-search-position
+@defun chess-pos-search* position &rest pieces
+Look on @var{position} for any of @var{pieces}.
+
+The result is an alist where each element looks like (@var{piece} . @var{indices}).
+Pieces which did not appear in @var{position} will be present in the resulting
+alist, but the `cdr' of their entries will be nil.
+@end defun
 
 @defun chess-search-position position target piece &optional check-only no-castling
 Look on @var{position} from @var{target} for a @var{piece} that can move there.
@@ -275,7 +303,7 @@ If @var{no-castling} is non-nil, do not consider castling moves.
 
 @defun chess-pos-can-castle position side
 Return whether the king on @var{position} can castle on @var{side}.
-@var{side} must be either ?K for the kingside, or ?Q for the queenside (use
+@var{side} must be either ?K for the king side, or ?Q for the queen side (use
 lowercase to query if black can castle).
 @end defun
 
@@ -288,8 +316,8 @@ See `chess-pos-can-castle'.
 
 It is only necessary to call this function if setting up a position
 manually.  Note that all newly created positions have full castling
-priveleges set, unless the position is created blank, in which case
-castling priveleges are unset.  See `chess-pos-copy'.
+privileges set, unless the position is created blank, in which case
+castling privileges are unset.  See `chess-pos-copy'.
 @end defun
 
 @c lispfun chess-pos-en-passant
@@ -375,112 +403,117 @@ Add an annotation for this position.
 
 @node FEN notation, EPD notation, Annotations, Positions
 @subsection FEN notation
+@cindex fen
 
-FEN notation encodes a chess position using a simple string.  The
-format is:
+@dfn{@acronym{FEN, Forsyth-Edwards Notation}} encodes a chess position using
+a simple string.  The format is:
 
-   POSITION SIDE CASTLING EN-PASSANT
+   @var{position} @var{side} @var{castling} @var{en-passant}
 
-The POSITION gives all eight ranks, by specifying a letter for each
-piece on the position, and a number for any intervening spaces.
+The @var{position} gives all eight ranks, by specifying a letter for each
+piece on the position, and a number for any intervening spaces, ranks
+separated by slashes.
 Trailing spaces need not be counted.  Uppercase letters signify
 white, and lowercase black.  For example, if your position only had
-a black king on d8, your POSITION string would be:
+a black king on d8, your @var{position} string would be:
 
-  3k////////
+@example
+3k////////
+@end example
 
 For the three spaces (a, b and c file), the black king, and then
 all the remaining ranks (which are all empty, so their spaces can
 be ignored).
 
-The SIDE is w or b, to indicate whose move it is.
+The @var{side} is @samp{w} or @samp{b}, to indicate whose move it is.
 
-CASTLING can contain K, Q, k or q, to signify whether the white or
-black king can still castle on the king or queen side.  EN-PASSANT
-signifies the target sqaure of an en passant capture, such as "e3" or "a6".
+@var{castling} can contain @samp{K}, @samp{Q}, @samp{k} or @samp{q}, to signify
+whether the white or black king can still castle on the king or queen side.
+If neither colour can castle on any side, @samp{-} should be provided.
 
-The starting chess position always looks like this:
-
-  rnbqkbnr/pppppppp/////PPPPPPPP/RNBQKBNR/ w KQkq -
-
-And in "full" mode (where all spaces are accounted for):
-
-  rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -
-
-@c lispfun chess-fen-to-pos
+@var{en-passant} signifies the target square of an en passant capture, such as
+@samp{e3} or @samp{a6}.
 
 @defun chess-fen-to-pos fen
-Convert a @var{fen-}like notation string to a chess position.
+Convert a @var{fen}-like string to a chess position.
 @end defun
-
-@c lispfun chess-pos-to-fen
 
 @defun chess-pos-to-fen position &optional full
-Convert a chess @var{position} to @var{fen-}like notation.
+Convert a chess @var{position} to a @acronym{FEN} string.
 If @var{full} is non-nil, represent trailing spaces as well.
 @end defun
+
+This is how the starting position looks like:
+
+@vindex chess-starting-position
+@lisp
+(chess-pos-to-fen chess-starting-position)
+@result{} "rnbqkbnr/pppppppp/////PPPPPPPP/RNBQKBNR w KQkq -"
+@end lisp
+
+Some external programs might have problems parsing terse
+FEN strings.  If you are unsure, use the more verbose form:
+
+@lisp
+(chess-pos-to-fen chess-starting-position t)
+@result{} "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+@end lisp
 
 @node EPD notation,  , FEN notation, Positions
 @subsection EPD notation
 
-EPD is "Extended Position Description"; it is a standard for describing chess
+@dfn{@acronym{EPD, Extended Position Description}} is a standard for describing chess
 positions along with an extended set of structured attribute values using the
-ASCII character set.  It is intended for data and command interchange among
-chessplaying programs.  It is also intended for the representation of portable
-opening library repositories.
+@acronym{ASCII} character set.  It is intended for data and command interchange
+among chess-playing programs.  It is also intended for the representation of
+portable opening library repositories.
 
 A single EPD uses one text line of variable length composed of four data field
-followed by zero or more operations.  The four fields of the EPD specification
-are the same as the first four fields of the FEN specification.
+followed by zero or more operations.  The four fields of the @acronym{EPD} specification
+are the same as the first four fields of the @acronym{FEN} specification.
 
-A text file composed exclusively of EPD data records should have a file name
-with the suffix ".epd".
-
-@c lispfun chess-epd-to-pos
+A text file composed exclusively of @acronym{EPD} data records should have a file name
+with the suffix @file{.epd}.
 
 @defun chess-epd-to-pos &optional string
-Convert extended position description to a chess position.
-If @var{string} is not specified, look for an @var{epd} string in the current buffer,
+Convert extended position description @var{string} to a chess position.
+If @var{string} is not specified, look for an @acronym{epd} string in the current buffer,
 and advance point after the correctly parsed position.
 @end defun
-
-@c lispfun chess-pos-to-epd
 
 @defun chess-pos-to-epd position
 Convert a chess @var{position} to a string representation in extended
 position description format.
 @end defun
 
-@c lispfun chess-epd-read-file
-
 @defun chess-epd-read-file file
 Return a list of positions contained in @var{file}.
 @end defun
 
 @menu
-* Operations::                  
-* Opcode "acd" analysis count depth::  
-* Opcode "acn" analysis count nodes::  
-* Opcode "acs" analysis count seconds::  
-* Opcode "am" avoid move(s)::   
-* Opcode "bm" best move(s)::    
+* Operations::
+* Opcode "acd" analysis count depth::
+* Opcode "acn" analysis count nodes::
+* Opcode "acs" analysis count seconds::
+* Opcode "am" avoid move(s)::
+* Opcode "bm" best move(s)::
 @end menu
 
 @node Operations, Opcode "acd" analysis count depth, EPD notation, EPD notation
 @subsubsection Operations
 
-An EPD operation is composed of an opcode followed by zero or more operands and
-is concluded by a semicolon.
+An @acronym{EPD} operation is composed of an opcode followed by zero or
+more operands and is concluded by a semicolon.
 
 Multiple operations are separated by a single space character.  If there is at
-least one operation present in an EPD line, it is separated from the last
+least one operation present in an @acronym{EPD} record, it is separated from the last
 (fourth) data field by a single space character.
 
 Some opcodes that allow for more than one operand may have special ordering
 requirements for the operands.  For example, the "pv" (predicted variation)
 opcode requires its operands (moves) to appear in the order in which they would
 be played.  All other opcodes that allow for more than one operand should have
-operands appearing in ASCII order.  An example of the latter set is the "bm"
+operands appearing in @acronym{ASCII} order.  An example of the latter set is the "bm"
 (best move[s]) opcode; its operands are moves that are all immediately playable
 from the current position.
 
@@ -511,14 +544,14 @@ byte) representation is suggested.
 
 The opcode "am" indicates a set of zero or more moves, all immediately playable
 from the current position, that are to be avoided in the opinion of the EPD
-writer.  Each operand is a SAN move; they appear in ASCII order.
+writer.  Each operand is a @acronym{SAN} move; they appear in @acronym{ASCII} order.
 
 @node Opcode "bm" best move(s),  , Opcode "am" avoid move(s), EPD notation
 @subsubsection Opcode "bm" best move(s)
 
 The opcode "bm" indicates a set of zero or more moves, all immediately playable
 from the current position, that are judged to the best available by the EPD
-writer.  Each operand is a SAN move; they appear in ASCII order.
+writer.  Each operand is a @acronym{SAN} move; they appear in @acronym{ASCII} order.
 
 @node Plies, Variations, Positions, The chess.el library
 @section Plies
@@ -527,30 +560,28 @@ A @dfn{ply} is the differential between two positions.  Or, it is the
 coordinate transformations applied to one position in order to arrive at
 the following position.  It is also informally called "a move".
 
-A ply may be represented in ASCII by printing the FEN string of the base
-position, and then printing the positional transformation in algebraic
-notation.  Since the starting position is usually known, the FEN string
+A ply may be represented in @acronym{ASCII} by printing the @acronym{FEN} string
+of the base position, and then printing the positional transformation in algebraic
+notation.  Since the starting position is usually known, the @acronym{FEN} string
 is optional.  A ply may be represented graphically by moving the chess
 piece(s) involved.  It may be rendered verbally by voicing which piece
 is to move, where it will move to, and what will happen a result of the
 move (piece capture, check, etc).
 
-Plies may be sent over network connections, postal mail, e-mail, etc.,
+Plies may be sent over network connections, postal mail, e-mail, @abbr{etc.},
 so long as the current position is maintained at both sides.
-Transmitting the base position's FEN string along with the ply offers a
+Transmitting the base position's @acronym{FEN} string along with the ply offers a
 form of confirmation during the course of a game.
 
 @menu
-* Creating plies::              
-* Ply details::                 
-* The "next" position::         
-* Algebraic notation::          
+* Creating plies::
+* Ply details::
+* The "next" position::
+* Algebraic notation::
 @end menu
 
 @node Creating plies, Ply details, Plies, Plies
 @subsection Creating plies
-
-@c lispfun chess-ply-create
 
 @defun chess-ply-create position &optional valid-p &rest changes
 Create a ply from the given @var{position} by applying the supplied @var{changes}.
@@ -562,8 +593,6 @@ Note: Do not pass in the rook move if @var{changes} represents a castling
 maneuver.
 @end defun
 
-@c lispfun chess-legal-plies
-
 @defun chess-legal-plies position &rest keywords
 Return a list of all legal plies in @var{position}.
 @var{keywords} allowed are:
@@ -574,52 +603,60 @@ Return a list of all legal plies in @var{position}.
   :file <number 0 to 7> [can only be used if :piece is present]
   :index <coordinate index>
   :target <specific target index>
-  :candidates <list of inddices>
+  :candidates <list of indices>
 
 These will constrain the plies generated to those matching the above
 criteria.
 
-@var{note}: All of the returned plies will reference the same copy of the
+NOTE: All of the returned plies will reference the same copy of the
 position object passed in.
 @end defun
 
 @node Ply details, The "next" position, Creating plies, Plies
 @subsection Ply details
 
-@c lispfun chess-ply-pos
-
 @defun chess-ply-pos ply
 Returns the base position associated with @var{ply}.
 @end defun
-
-@c lispfun chess-ply-set-pos
 
 @defun chess-ply-set-pos ply position
 Set the base position of @var{ply}.
 @end defun
 
-@c lispfun chess-ply-changes
+@defun chess-ply-changes
+Return the coordinate transformations and keywords associated with this @var{ply}.
 
-@c lispfun chess-ply-set-changes
+A list of a pair of indices (or two, in case of castling) followed by
+optional keywords.
+@end defun
 
-@c lispfun chess-ply-source
+@defun chess-ply-set-changes
+Set the coordinate transformations and keywords associated with this @var{ply}.
+@end defun
 
 @defun chess-ply-source ply
-Returns the source square index value of @var{ply}.
+Return the source square index value of @var{ply}.
 @end defun
-
-@c lispfun chess-ply-target
 
 @defun chess-ply-target ply
-Returns the target square index value of @var{ply}.
+Return the target square index value of @var{ply}.
 @end defun
+
+For example, here is how to find the source square of a freshly created ply:
+
+@lisp
+(chess-ply-source (chess-ply-create chess-starting-position nil
+                                    (chess-coord-to-index "e2")
+                                    (chess-coord-to-index "e4")))
+@result{} 52
+@end lisp
 
 @node The "next" position, Algebraic notation, Ply details, Plies
 @subsection The "next" position
 
-@c lispfun chess-ply-next-pos
-
-@c lispfun chess-ply-final-p
+@defun chess-ply-next-pos ply
+Return the position that results from executing @var{ply}.
+@end defun
 
 @defun chess-ply-final-p ply
 Return non-nil if this is the last ply of a game/variation.
@@ -629,18 +666,12 @@ Return non-nil if this is the last ply of a game/variation.
 @subsection Algebraic notation
 
 A thing to deal with in chess is algebraic move notation, such as
-Nxf3+.  (I leave description of this notation to better manuals
-than this).  This notation is a shorthand way of representing where
-a piece is moving from and to, by specifying the piece is involved,
+@samp{Nxf3+}.  This notation is a shorthand way of representing where
+a piece is moving from and to, by specifying the piece involved,
 where it's going, and whether or not a capture or check is
 involved.
 
-You can convert from algebraic notation to a ply (one pair in most
-cases, but two for a castle) using the following function (NOTE:
-POSITION determines which side is on move (by calling
-`chess-pos-side-to-move')):
-
-@c lispfun chess-algebraic-to-ply
+You can convert from algebraic notation to a ply using the following function:
 
 @defun chess-algebraic-to-ply position move &optional trust
 Convert the algebraic notation @var{move} for @var{position} to a ply.
@@ -651,11 +682,15 @@ error if not.
 
 To convert from a ply to algebraic notation, use:
 
-@c lispfun chess-ply-to-algebraic
+@defun chess-ply-to-algebraic ply &optional type
+Convert the given @var{ply} to algebraic notation (a string).
 
-@defun chess-ply-to-algebraic ply &optional long
-Convert the given @var{ply} to algebraic notation.
-If @var{long} is non-nil, render the move into long notation.
+Optional argument @var{type} specifies the kind of algebraic notation to
+generate.
+@code{:san} (the default) generates short (or standard) algebraic notation.
+@code{:lan} generates long algebraic notation (like @samp{Nb1-c3}).
+@code{:fan} generates figurine algebraic notation (uppercase letters will
+be replaced by Unicode chess figures).
 @end defun
 
 Lastly, there is a regexp for quickly checking if a string is in
@@ -678,8 +713,8 @@ represented interesting tangents during a game---but not actually
 played---as envisioned by the player, an annotator, or someone studying
 the game.
 
-Variations may be represented in ASCII by stating the FEN string for
-starting position, followed by the list of plies that follow that
+Variations may be represented in @acronym{ASCII} by stating the @acronym{FEN}
+string for starting position, followed by the list of plies that follow that
 position.  They are difficult to represent graphically, except for
 showing each position in turn with a slight pause between---or by
 allowing the user to navigate each of the subsequent positions in turn.
@@ -687,10 +722,10 @@ They may be represented verbally by announcing each of the plies in
 turn, as mentioned above.
 
 @menu
-* Creating variations::         
-* Variation positions::         
-* Varation plies::              
-* Making a move in a variation::  
+* Creating variations::
+* Variation positions::
+* Variation plies::
+* Making a move in a variation::
 @end menu
 
 @node Creating variations, Variation positions, Variations, Variations
@@ -703,7 +738,7 @@ Create a new chess variation object.
 Optionally use the given starting @var{position}.
 @end defun
 
-@node Variation positions, Varation plies, Creating variations, Variations
+@node Variation positions, Variation plies, Creating variations, Variations
 @subsection Variation positions
 
 @c lispfun chess-var-pos
@@ -731,8 +766,8 @@ Return the color whose move it is in @var{var} at @var{index} (or at the last po
 of the variation if @var{index} is nil).
 @end defun
 
-@node Varation plies, Making a move in a variation, Variation positions, Variations
-@subsection Varation plies
+@node Variation plies, Making a move in a variation, Variation positions, Variations
+@subsection Variation plies
 
 @c lispfun chess-var-ply
 
@@ -753,7 +788,7 @@ Reveal the plies of @var{var} by converting them to algebraic
 notation.
 @end defun
 
-@node Making a move in a variation,  , Varation plies, Variations
+@node Making a move in a variation,  , Variation plies, Variations
 @subsection Making a move in a variation
 
 @c lispfun chess-var-move
@@ -765,10 +800,8 @@ The 'changes' of the last ply reflect whether the var is currently in
 progress (nil), if it is drawn, resigned, mate, etc.
 @end defun
 
-@c lispfun chess-var-add-ply
-
 @defun chess-var-add-ply var ply
-Return the position related to @var{var}'s @var{index} position.
+Add to @var{var} the given @var{ply}.
 @end defun
 
 @node Games, Collections, Variations, The chess.el library
@@ -781,35 +814,26 @@ sub-variations of interest to those studying the game afterwards.
 Where TAGS is an alist that associates arbitrary English tag names to
 their values.
 
-A game may be represented in ASCII using standard PGN notation.
+A game may be represented in @acronym{ASCII} using @acronym{PGN,
+Portable Game Notation}.
 Representing them graphically or verbally is similar to what is done
 for variations.
-
-@c lispfun chess-game-add-hook
 
 @defun chess-game-add-hook game function &optional data prepend
 Add to @var{game} an event hook @var{function}.
 @end defun
 
-@c lispfun chess-game-add-ply
-
 @defun chess-game-add-ply game ply
-Return the position related to @var{game}'s @var{index} position.
+Add @var{ply} to the main variation of @var{game}.
 @end defun
-
-@c lispfun chess-game-hooks
 
 @defun chess-game-hooks game
-Return the tags alist associated with @var{game}.
+Return the event hooks associated with @var{game}.
 @end defun
-
-@c lispfun chess-game-plies
 
 @defun chess-game-plies game
 Return the main variation of @var{game} as a list of plies.
 @end defun
-
-@c lispfun chess-game-remove-hook
 
 @defun chess-game-remove-hook game function &optional data
 Remove from @var{game} all event hooks that match @var{function}.
@@ -817,31 +841,25 @@ If @var{data} is specified, only remove those hooks whose associated data
 matches.
 @end defun
 
-@c lispfun chess-game-run-hooks
-
 @defun chess-game-run-hooks game &rest args
 Run the event hooks of @var{game} and pass @var{args}.
 @end defun
 
-@c lispfun chess-game-set-hooks
-
 @defun chess-game-set-hooks game hooks
-Return the tags alist associated with @var{game}.
+Set the event hooks associated with @var{game}.
 @end defun
-
-@c lispfun chess-game-set-plies
 
 @defun chess-game-set-plies game plies
 Set the list of plies which represents the main variation of @var{game}.
 @end defun
 
 @menu
-* Creating games::              
-* Game tags::                   
-* Game positions::              
-* Game plies::                  
-* Making a move::               
-* PGN notation::                
+* Creating games::
+* Game tags::
+* Game positions::
+* Game plies::
+* Making a move::
+* PGN notation::
 @end menu
 
 @node Creating games, Game tags, Games, Games
@@ -909,7 +927,7 @@ Return the @var{game}'s current position index.
 @c lispfun chess-game-seq
 
 @defun chess-game-seq game
-Return the current @var{game} sequence.
+Return the current @var{game} sequence number.
 @end defun
 
 @c lispfun chess-game-side-to-move
@@ -917,6 +935,7 @@ Return the current @var{game} sequence.
 @defun chess-game-side-to-move game &optional index
 Return the color whose move it is in @var{game} at @var{index} (or at the last position
 if @var{index} is nil).
+@code{t} for white and @code{nil} for black.
 @end defun
 
 @node Game plies, Making a move, Game positions, Games
@@ -947,14 +966,14 @@ progress (nil), if it is drawn, resigned, mate, etc.
 @c lispfun chess-pgn-to-game
 
 @defun chess-pgn-to-game &optional string
-Convert @var{pgn} notation at point into a chess game.
+Convert @dfn{PGN notation} at point into a chess game.
 Optionally use the supplied @var{string} instead of the current buffer.
 @end defun
 
 @c lispfun chess-game-to-pgn
 
 @defun chess-game-to-pgn game &optional indented to-string
-Convert a chess @var{game} to @var{pgn} notation.
+Convert a chess @var{game} to @dfn{PGN notation}.
 If @var{indented} is non-nil, indent the move texts.
 If @var{to-string} is non-nil, return a string instead of inserting the resulting
 @var{pgn} text.
@@ -967,7 +986,7 @@ If @var{to-string} is non-nil, return a string instead of inserting the resultin
 @end defun
 
 @menu
-* PGN mode::                    
+* PGN mode::
 @end menu
 
 @node PGN mode,  , PGN notation, PGN notation
@@ -980,7 +999,7 @@ Visualize the move for the @var{pgn} game under point.
 This does not require that the buffer be in @var{pgn} mode.
 @end defun
 
-@node Collections,  , Games, The chess.el library
+@node Collections, Chess Opening Books, Games, The chess.el library
 @section Collections
 
 A @dfn{collection} is a set of games archived for later perusal.  A set
@@ -995,11 +1014,11 @@ games from the library, or performing library-wide analyses and
 searches.
 
 @menu
-* Opening Databases::           
-* Querying Databases::          
-* Modifying Databases::         
-* Finalising Databases::        
-* Database Modules::            
+* Opening Databases::
+* Querying Databases::
+* Modifying Databases::
+* Finalising Databases::
+* Database Modules::
 @end menu
 
 @node Opening Databases, Querying Databases, Collections, Collections
@@ -1068,8 +1087,8 @@ Currently, there are two subclasses of the above defined
 database base-class:
 
 @menu
-* chess-file::                  
-* chess-scid::                  
+* chess-file::
+* chess-scid::
 @end menu
 
 @node chess-file, chess-scid, Database Modules, Database Modules
@@ -1090,6 +1109,68 @@ collections into one uniform concept.
 
 This modules implement basic reading and writing functionality
 for SCID (Shane's Chess Information Database) files.
+
+@node Chess Opening Books,  , Collections, The chess.el library
+@section Chess Opening Books
+
+There are two different modules/libraries provided for looking up
+chess positions in opening books.
+
+@menu
+* ECO Classification::
+* Polyglot opening book format support::
+@end menu
+
+@node ECO Classification, Polyglot opening book format support, Chess Opening Books, Chess Opening Books
+@subsection ECO Classification
+
+@vindex chess-default-modules
+Module @code{chess-eco} provides a database of well known names
+for chess opening positions.  If this module is activated (see variable
+@code{chess-default-modules}) known chess opening positions will be announced
+in the minibuffer during a game.
+
+@node Polyglot opening book format support,  , ECO Classification, Chess Opening Books
+@subsection Polyglot opening book format support
+
+The popular and freely documented Polyglot opening book format
+is supported.  There is a default polyglot book file shipped with chess.el
+to support engines which do not have built-in support for looking up positions
+in opening books (such as some UCI protocol based engines).
+
+@defvar chess-polyglot-book-file
+Path to default polyglot book file.
+@end defvar
+
+@defvar chess-polyglot-book
+If non-nil, the buffer holding the currently loaded polyglot book data.
+
+This is used by UCI based engine modules as well as the internal AI.
+@end defvar
+
+@defun chess-polyglot-book-open file
+Open a polyglot book @var{file}.
+
+Returns a buffer object which contains the binary data.
+@end defun
+
+@defun chess-polyglot-book-plies book position
+Return a list of plies found in @var{book} for @var{position}.
+The resulting list is ordered, most interesting plies come first.
+The @code{:polyglot-book-weight} ply keyword is used to store the actual move weights.
+Use `chess-ply-keyword' on elements of the returned list to retrieve them.
+@end defun
+
+@defun chess-polyglot-book-ply book position &optional strength
+If non-nil a (randomly picked) ply from @var{book} for @var{position}.
+Random distribution is defined by the relative weights of the found plies.
+If non-nil, @var{strength} defines the bias towards better moves.
+A value below 1.0 will penalize known good moves while a value
+above 1.0 will prefer known good moves.  The default is the value
+of `chess-polyglot-book-strength'.
+A strength value of 0.0 will completely ignore move weights and evenly
+distribute the probability that a move gets picked.
+@end defun
 
 @node Modules, Chessboard displays, The chess.el library, Top
 @chapter Modules
@@ -1214,19 +1295,20 @@ real world.
 
 The previous chapter described all the objects found in
 chess---positions, plies, variations, games and collections.  However,
-these objects can only be manipulated programmitically using the
+these objects can only be manipulated programmatically using the
 functions given so far.  In order to present them in a meaningful
 fashion to a human reader, it is necessary to create and use a display
 object.
 
 @menu
-* Generic display manipulation functions::  
-* Plain ASCII diagram displays::  
-* ICS1 style ASCII displays::   
-* Graphical displays::          
+* Generic display manipulation functions::
+* Chess display mode::
+* Plain ASCII diagram displays::
+* ICS1 style ASCII displays::
+* Graphical displays::
 @end menu
 
-@node Generic display manipulation functions, Plain ASCII diagram displays, Chessboard displays, Chessboard displays
+@node Generic display manipulation functions, Chess display mode, Chessboard displays, Chessboard displays
 @section Generic display manipulation functions
 
 @c lispfun chess-display-create
@@ -1274,10 +1356,9 @@ Invert the perspective of the current chess board.
 
 @c lispfun chess-display-move
 
-@defun chess-display-move display ply &optional prev-pos pos
+@defun chess-display-move display ply
 Move a piece on @var{display}, by applying the given @var{ply}.
 The position of @var{ply} must match the currently displayed position.
-If only @var{start} is given, it must be in algebraic move notation.
 @end defun
 
 @c lispfun chess-display-move-backward
@@ -1351,60 +1432,321 @@ Update the chessboard @var{display}.  @var{popup} too, if that arg is non-nil.
 
 @c lispfun chess-display-variation
 
-@node Plain ASCII diagram displays, ICS1 style ASCII displays, Generic display manipulation functions, Chessboard displays
+@node Chess display mode, Plain ASCII diagram displays, Generic display manipulation functions, Chessboard displays
+@section Chess display mode
+
+Chess display mode is a special major mode (@pxref{Major Modes, , , emacs})
+that allows to select pieces to move with the mouse or by moving
+point to the desired square/piece.  Additionally, you can enter
+moves in a variant of algebraic notation via the keyboard.
+
+All the chessboard displays described in following sections
+share the basic behaviour provided by chess display mode.
+They basically only differ in appearance of the various chessboards.
+
+@menu
+* Basic operations::
+* Selecting pieces with the keyboard::
+* Selecting pieces with the mouse::
+* Entering moves with algebraic notation::
+@end menu
+
+@node Basic operations, Selecting pieces with the keyboard, Chess display mode, Chess display mode
+@subsection Basic operations
+
+@table @kbd
+@kindex C-i
+@kindex TAB
+@item C-i
+@itemx @key{TAB}
+@findex chess-display-invert
+Invert the perspective of the current chess board.
+
+@kindex ,
+@item ,
+@findex chess-display-move-backward
+Show the previous move in the current game.
+
+@cindex algebraic notation, searching moves
+@kindex C-r
+@item C-r
+@findex chess-display-search-backward
+Find previous move which algebraic notation matches a regular expression
+@code{chess-display-search-backward}.
+
+@kindex C-s
+@item C-s
+@findex chess-display-search-forward
+Find next move which algebraic notation matches a regular expression
+@code{chess-display-search-forward}.
+
+@kindex .
+@item .
+@findex chess-display-move-forward
+Show the next move in the current game.
+
+@kindex <
+@item <
+@findex chess-display-move-first
+Move to the initial position of the current game (@code{chess-display-move-first}).
+
+@kindex >
+@item >
+@findex chess-display-move-last
+Move to the last position of the current game (@code{chess-display-move-last}).
+
+@kindex C-c C-d
+@item C-c C-d
+@findex chess-display-draw
+Offer to draw the current game (@code{chess-display-draw}).
+
+@kindex C-c C-r
+@item C-c C-r
+@findex chess-display-resign
+Resign the current game (@code{chess-display-resign}).
+
+@kindex M-w
+@item M-w
+@findex chess-display-kill-board
+Copy the currently displayed position to the kill ring as a FEN string
+(@code{chess-display-kill-board}).
+
+@kindex C-y
+@item C-y
+@findex chess-display-yank-board
+Set the current display position via a FEN string from the kill ring
+(@code{chess-display-yank-board}).
+
+This is useful to copy positions from one chessboard
+display to another, as well as quickly setting up a position
+from a FEN string previously added to the kill ring from
+somewhere else.
+
+@kindex X
+@item X
+@findex chess-display-quit
+Quit this chessboard display (@code{chess-display-quit}).
+
+This destroys the session (and all related modules) associated with this
+chessboard display.
+@end table
+
+@node Selecting pieces with the keyboard, Selecting pieces with the mouse, Basic operations, Chess display mode
+@subsection Selecting pieces with the keyboard
+
+In character based chessboard displays, point can be moved around
+in the buffer as uaual.  You can indicate the initial square/piece
+and the target square/piece by moving point to the desired position
+and pressing @kbd{@key{RET}}.
+
+@table @kbd
+@kindex RET
+@item @key{RET}
+@findex chess-display-select-piece
+Select the piece/square currently indicated by point
+(@code{chess-display-select-piece}) to move from/to.
+@end table
+
+@node Selecting pieces with the mouse, Entering moves with algebraic notation, Selecting pieces with the keyboard, Chess display mode
+@subsection Selecting pieces with the mouse
+
+Similarily, you can also use the mouse (if available) to indicate
+the source and target square of your move.
+
+@table @kbd
+@kindex down-mouse-1
+@kindex down-mouse-2
+@kindex drag-mouse-1
+@kindex drag-mouse-2
+@item down-mouse-1
+@itemx down-mouse-2
+@itemx drag-mouse-1
+@itemx drag-mouse-2
+@findex chess-display-select-piece
+Select the piece/square currently indicated by the mouse pointer
+(@code{chess-display-select-piece}) to move from/to.
+@end table
+
+@node Entering moves with algebraic notation,  , Selecting pieces with the mouse, Chess display mode
+@subsection Entering moves with algebraic notation
+@cindex algebraic notation, entering moves with
+
+@table @asis
+@kindex a
+@kindex b
+@kindex c
+@kindex d
+@kindex e
+@kindex f
+@kindex g
+@kindex h
+@kindex 1
+@kindex 2
+@kindex 3
+@kindex 4
+@kindex 5
+@kindex 6
+@kindex 7
+@kindex 8
+@kindex N
+@kindex B
+@kindex R
+@kindex Q
+@kindex K
+@kindex x
+@kindex =
+@item @kbd{a} @dots{} @kbd{h}
+@itemx @kbd{1} @dots{} @kbd{8}
+@itemx @kbd{N}
+@itemx @kbd{B}
+@itemx @kbd{R}
+@itemx @kbd{Q}
+@itemx @kbd{K}
+@itemx @kbd{x}
+@itemx @kbd{=}
+@findex chess-input-shortcut
+Enter move in algebraic notation.
+
+The move will be accepted as soon as it is unambiguous.
+So in most situations, you do not need to type the complete
+algebraic move string.  For instance, if there is only one piece
+which can be taken by one of your knights, typing @kbd{N x} is
+sufficient to select that move.
+
+Additionally, the characters @kbd{x} and @kbd{=} are optional,
+as there is no difference between @kbd{N x e 4} and @kbd{N e 4}.
+
+@kindex backspace
+@item @key{backspace}
+@findex chess-input-shortcut-delete
+Delete the last entered chess move character @code{chess-input-shortcut-delete}.
+
+This is useful if you have accidentally typed a wrong character,
+and the move was not unambiguous yet.
+@end table
+
+@node Plain ASCII diagram displays, ICS1 style ASCII displays, Chess display mode, Chessboard displays
 @section Plain ASCII diagram displays
 
-The simplest display style available is chess-plain, a very customisable
-ASCII board diagram display.
+The simplest display style available is @code{chess-plain}, a very customisable
+@acronym{ASCII} board diagram display.
 
-@defvar chess-plain-separate-frame
+This is how the starting position looks in its default configuration:
+
+@example
+ +---------------+
+8|r n b q k b n r|
+7|p p p p p p p p|
+6|. . . . . . . .|
+5|. . . . . . . .|
+4|. . . . . . . .|
+3|. . . . . . . .|
+2|P P P P P P P P|
+1|R N B Q K B N R|
+ +---------------+
+  a b c d e f g h
+@end example
+
+@defopt chess-plain-separate-frame
 If non-nil, display the chessboard in its own frame.
-@end defvar
+@end defopt
 
-@defvar chess-plain-draw-border
-Non-nil if a border should be drawn (using `chess-plain-border-chars').
-@end defvar
+@defopt chess-plain-border-style
+If non-nil, a vector of Characters used to draw borders.
 
-@defvar chess-plain-border-chars
-A list of Characters used to draw borders.
-@end defvar
+Otherwise, omit to draw any border around the chessboard diagram.
+@end defopt
 
-@defvar chess-plain-black-square-char
+@defopt chess-plain-black-square-char
 Character used to indicate empty black squares.
-@end defvar
+@end defopt
 
-@defvar chess-plain-white-square-char
+@defopt chess-plain-white-square-char
 Character used to indicate black white squares.
-@end defvar
+@end defopt
 
-@defvar chess-plain-piece-chars
+@defopt chess-plain-piece-chars
 Alist of pieces and their corresponding characters.
-@end defvar
+@end defopt
 
-@defvar chess-plain-upcase-indicates
+@defopt chess-plain-upcase-indicates
 Defines what a upcase char should indicate.
-The default is 'color, meaning a upcase char is a white piece, a
-lowercase char a black piece.  Possible values: 'color (default),
-'square-color.  If set to 'square-color, a uppercase character
-indicates a piece on a black square. (Note that you also need to
+The default is @code{'color}, meaning a upcase char is a white piece, a
+lowercase char a black piece.  Possible values: @code{'color} (default),
+@code{'square-color}.  If set to @code{'square-color}, a uppercase character
+indicates a piece on a black square.  (Note that you also need to
 modify `chess-plain-piece-chars' to avoid real confusion.)
-@end defvar
+@end defopt
 
-@defvar chess-plain-spacing
+@defopt chess-plain-spacing
 Number of spaces between files.
-@end defvar
+@end defopt
+
+@kindex M-x customize-group RET chess-plain RET
+To customize options of @code{chess-plain}, use
+@kbd{M-x customize-group @key{RET} chess-plain @key{RET}}.
 
 @node ICS1 style ASCII displays, Graphical displays, Plain ASCII diagram displays, Chessboard displays
 @section ICS1 style ASCII displays
 
-@defvar chess-ics1-separate-frame
+@code{chess-ics1} is a more verbose @acronym{ASCII} chessboard display.
+
+This is how the starting position looks with this chessboard display:
+
+@example
+      +---+---+---+---+---+---+---+---+
+    8 | r | n | b | q | k | b | n | r |
+      +---+---+---+---+---+---+---+---+
+    7 | p | p | p | p | p | p | p | p |
+      +---+---+---+---+---+---+---+---+
+    6 |   |   |   |   |   |   |   |   |
+      +---+---+---+---+---+---+---+---+
+    5 |   |   |   |   |   |   |   |   |
+      +---+---+---+---+---+---+---+---+
+    4 |   |   |   |   |   |   |   |   |
+      +---+---+---+---+---+---+---+---+
+    3 |   |   |   |   |   |   |   |   |
+      +---+---+---+---+---+---+---+---+
+    2 | P | P | P | P | P | P | P | P |
+      +---+---+---+---+---+---+---+---+
+    1 | R | N | B | Q | K | B | N | R |
+      +---+---+---+---+---+---+---+---+
+        a   b   c   d   e   f   g   h
+@end example
+
+@defopt chess-ics1-separate-frame
 If non-nil, display the chessboard in its own frame.
-@end defvar
+@end defopt
+
+@kindex M-x customize-group RET chess-ics1 RET
+To customize options of @code{chess-ics1}, use
+@kbd{M-x customize-group @key{RET} chess-ics1 @key{RET}}.
 
 @node Graphical displays,  , ICS1 style ASCII displays, Chessboard displays
 @section Graphical displays
 
-@node Engines, Internet Chess Servers, Chessboard displays, Top
+The graphical chessboard display (@code{chess-images}) uses image files
+to create a visually appealing chessboard in a buffer.
+
+@defopt chess-images-directory
+A directory which contains images in @acronym{XPM} format.
+
+If you want to draw your own images, each piece must be named
+@file{@var{color}-@var{piece}.xpm}, where @var{color} is either black or white,
+and @var{piece} is one of rook, knight, bishop, queen, king or pawn.
+
+The only image format currently supported is @acronym{XPM}.
+@end defopt
+
+@defopt chess-images-separate-frame
+If non-nil, display the chessboard in its own frame.
+@end defopt
+
+@kindex M-x customize-group RET chess-images RET
+For all customization options of @code{chess-images}, use
+@kbd{M-x customize-group @key{RET} chess-images @key{RET}}.
+
+@node Engines, Chess Session, Chessboard displays, Top
 @chapter Engines
 
 Engines are the representation of an opponent in Chess.  THe main type
@@ -1413,28 +1755,28 @@ can be other uses for engine objects, such as providing networked engined
 for playing with opponent over different types of transports.
 
 @menu
-* Common functions::            
-* Crafty::                      
-* Gnu Chess::                   
-* Phalanx::                     
-* Sjeng::                       
+* Common functions::
+* AI::
+* Crafty::
+* Fruit::
+* Glaurung::
+* GNU Chess::
+* Phalanx::
+* Sjeng::
+* Stockfish::
 @end menu
 
-@node Common functions, Crafty, Engines, Engines
+@node Common functions, AI, Engines, Engines
 @section Common functions
-
-@c lispfun chess-engine-create
 
 @defun chess-engine-create module game &optional response-handler &rest handler-ctor-args
 Create a new chess engine @var{module} (a symbol) associated with @var{game}.
 Optionally supply a new @var{response-handler}.
 @end defun
 
-@c lispfun chess-engine-set-option
-
 @defun chess-engine-set-option engine option value
-Set @var{engine} @var{option} to @var{value} by invoking its handler with the 'set-option
-event.
+Set @var{engine} @var{option} to @var{value} by invoking its handler with
+the 'set-option event.
 @end defun
 
 @c lispfun chess-engine-destroy
@@ -1470,27 +1812,228 @@ to submit the data.  Otherwise, the 'send event is triggered and the engine
 event handler can take care of the data.
 @end defun
 
-@node Crafty, Gnu Chess, Common functions, Engines
+@node AI, Crafty, Common functions, Engines
+@section AI
+
+The @acronym{AI} engine module defines a pure Emacs Lisp implementation
+of an opponent.  Contrary to all other engine modules mentioned later on,
+it does not require any external programs to be installed.
+
+@kindex C-u M-x chess RET ai RET
+To explicitly select this engine as an opponent,
+use @kbd{C-u M-x chess @key{RET} ai @key{RET}}.
+
+@defopt chess-ai-depth
+Defines the default search depth for this engine.
+@end defopt
+
+@defopt chess-ai-quiescence-depth
+Defines the number of plies to search for a quiet position.
+This is in addition to `chess-ai-depth'.
+@end defopt
+
+If you'd like to employ the search and evaluation functions provided
+by this module programmatically, the following function is the top-level
+entry point.
+
+@defun chess-ai-best-move position &optional depth eval-fn
+Find the supposedly best move (ply) for @var{position}.
+@var{depth} defaults to the value of `chess-ai-depth'.
+@end defun
+
+@node Crafty, Fruit, AI, Engines
 @section Crafty
 
-@node Gnu Chess, Phalanx, Crafty, Engines
-@section Gnu Chess
+@dfn{Crafty} is a chess program written by Michael Byrne, UAB professor
+Dr. Robert Hyatt, Tracy Riegle, Peter Skinner and Ted Langreck.  It is directly
+derived from Cray Blitz, winner of the 1983 and 1986 World Computer Chess
+Championships.
 
-@node Phalanx, Sjeng, Gnu Chess, Engines
+If the @command{crafty} program is installed and can be found in the program
+search path (@code{exec-path}), the @code{chess-crafty} engine module will
+automatically detect it.
+
+@vindex chess-crafty-path
+If @command{crafty} is installed in a non-standard location, variable
+@code{chess-crafty-path} can be set to point to the executable.
+
+@kindex C-u M-x chess RET crafty RET
+If you have multiple engines installed you can explicitly select
+to play against Crafty by invoking @kbd{C-u M-x chess @key{RET} crafty @key{RET}}.
+
+@node Fruit, Glaurung, Crafty, Engines
+@section Fruit
+
+@dfn{Fruit} is a chess engine developed by Fabien Letouzey. It was
+commercially available from September 2005 until July 2007.  Now it is freeware
+and you can download it for free from @uref{http://www.fruitchess.com/}.
+The development on Fruit by Fabien Letouzey has ceded and it is unlikely to
+continue.
+
+Fruit was vice world computer chess champion 2005.
+
+If the @command{fruit} command is installed and can be found in the program
+search path (@code{exec-path}),
+the @code{chess-fruit} engine module will automatically detect it.
+
+@vindex chess-fruit-path
+If Fruit is installed in a non-standard location, variable
+@code{chess-fruit-path} can be set to point to the executable.
+
+@kindex C-u M-x chess RET fruit RET
+If you have multiple engines installed you can explicitly select
+to play against Fruit by invoking @kbd{C-u M-x chess @key{RET} fruit @key{RET}}.
+
+@node Glaurung, GNU Chess, Fruit, Engines
+@section Glaurung
+
+@dfn{Glaurung} is another freely distributed strong computer chess engine.
+
+If the @command{glaurung} program is installed and can be found in the
+program search path (@code{exec-path}),
+the @code{chess-glaurung} engine module will automatically detect it.
+
+@vindex chess-glaurung-path
+If Glaurung is installed in a non-standard location, variable
+@code{chess-glaurung-path} can be set to point to the executable.
+
+@kindex C-u M-x chess RET glaurung RET
+If you have multiple engines installed you can explicitly select
+to play against Glaurung by invoking @kbd{C-u M-x chess @key{RET} glaurung @key{RET}}.
+
+@node GNU Chess, Phalanx, Glaurung, Engines
+@section GNU Chess
+
+@uref{http://gnu.org/software/chess/, @dfn{@acronym{GNU} Chess}} is free
+software, licensed under the terms of the @acronym{GNU} General Public License, and is
+maintained by collaborating developers.
+As one of the earliest computer chess programs with full source code available,
+it's one of the oldest for Unix-based systems and has since been ported to many
+other platforms.
+
+If the @command{gnuchess} program is installed and can be found in the
+program search path (@code{exec-path}),
+the @code{chess-gnuchess} engine module will automatically detect it.
+
+@vindex chess-gnuchess-path
+If @acronym{GNU} Chess is installed in a non-standard location, variable
+@code{chess-gnuchess-path} can be set to point to the executable.
+
+@kindex C-u M-x chess RET gnuchess RET
+If you have multiple engines installed you can explicitly select
+to play against @acronym{GNU} Chess by invoking
+@kbd{C-u M-x chess @key{RET} gnuchess @key{RET}}.
+
+@node Phalanx, Sjeng, GNU Chess, Engines
 @section Phalanx
 
-@node Sjeng,  , Phalanx, Engines
+@dfn{Phalanx} is an old, popular chess engine, with an interesting history.
+
+If the @command{phalanx} program is installed and can be found in the
+program search path (@code{exec-path}),
+the @code{chess-phalanx} engine module will automatically detect it.
+
+@vindex chess-phalanx-path
+If Phalanx is installed in a non-standard location, variable
+@code{chess-phalanx-path} can be set to point to the executable.
+
+@kindex C-u M-x chess RET phalanx RET
+If you have multiple engines installed you can explicitly select
+to play against Phalanx by invoking @kbd{C-u M-x chess @key{RET} phalanx @key{RET}}.
+
+@node Sjeng, Stockfish, Phalanx, Engines
 @section Sjeng
 
-@node Internet Chess Servers, Concept Index, Engines, Top
+@uref{http://sjeng.org/, @dfn{Sjeng}} is a championship-winner automated chess engine
+developed by Gian-Carlo Pascutto from Belgium.  While its original
+version was free, recent developments are for sale.
+
+If the @command{sjeng} program is installed and can be found in the
+program search path (@code{exec-path}),
+the @code{chess-sjeng} engine module will automatically detect it.
+
+@vindex chess-sjeng-path
+If Sjeng is installed in a non-standard location, variable
+@code{chess-sjeng-path} can be set to point to the executable.
+
+@kindex C-u M-x chess RET sjeng RET
+If you have multiple engines installed you can explicitly select
+to play against Sjeng by invoking @kbd{C-u M-x chess @key{RET} sjeng @key{RET}}.
+
+@node Stockfish,  , Sjeng, Engines
+@section Stockfish
+
+@uref{http://www.stockfishchess.org/, @dfn{Stockfish}} is one of the strongest
+chess engines in the world, appearing near or at the top of most chess engine
+rating lists.
+Stockfish is also free software, licensed under the terms of the
+@acronym{GNU} General Public License.
+
+If the @command{stockfish} program is installed and can be found in the
+program search path (@code{exec-path}),
+the @code{chess-stockfish} engine module will automatically detect it.
+
+@vindex chess-stockfish-path
+If Stockfish is installed in a non-standard location, variable
+@code{chess-stockfish-path} can be set to point to the executable.
+
+@kindex C-u M-x chess RET stockfish RET
+If you have multiple engines installed you can explicitly select
+to play against Stockfish by invoking @kbd{C-u M-x chess @key{RET} stockfish @key{RET}}.
+
+@node Chess Session, Internet Chess Servers, Engines, Top
+@chapter Chess Session
+
+A chess session assembles all modules mentioned in previous
+chapters into a working system to interact with.  A session typically
+consists of at least one display module, one engine module,
+and possibly a number of optional modules.  All these mdoules
+share a common game object which is used to keep track of the
+currently active game.
+
+@defun chess engine disable-popup engine-response-handler &rest engine-ctor-args
+Play a game against @var{engine}.
+
+This function constructs all the necessary modules required for a chess session.
+In particular, it will start @var{engine} and create a chess display as
+configured in @code{chess-default-display}.
+
+This is the main entry-point for interactively launching
+a chessboard display with associated engine.
+
+If you want to launch a chess session as part of your own code,
+the probably more expressive alias `chess-session' might be interesting
+to use.
+@end defun
+
+You can have several active chess sessions.
+In fact, some features later described in this manual make use
+of this, @xref{Internet Chess Servers}.
+
+@kindex M-x chess RET
+@vindex chess-default-display
+@vindex chess-default-engine
+To interactively start a chess session, invoke
+@kbd{M-x chess @key{RET}}.  This uses @code{chess-default-display}
+to determine the chessboard display to use, and
+@code{chess-default-engine} to determine an opponent.
+
+@kindex C-u M-x chess RET
+If you want to play against a specific engine, provide
+a prefix argument as in @kbd{C-u M-x chess @key{RET}}, which will
+prompt for an engine module.  The module name has the common
+prefix @samp{chess-} stripped.  So you enter @samp{gnuchess}
+to indicate you'd like to play against the @code{chess-gnuchess} module.
+
+@node Internet Chess Servers, Concept Index, Chess Session, Top
 @chapter Internet Chess Servers
 
-Based on the services provided above, there is also a speical mode
+Based on the services provided above, there is also a special mode
 for communication with Internet Chess Servers.
 
-ON an Internet Chess Server you can seek to play against other
+On an Internet Chess Server you can seek to play against other
 human or computer players, observe other games being player or examined,
-play tournaments, chat with fellow chess players, participate in a team game,
+play tournaments, chat with fellow chess players, participate in team games,
 or do various other interesting chess related things.
 
 A default set of well known servers is defined in the following variable:
@@ -1499,16 +2042,24 @@ A default set of well known servers is defined in the following variable:
 A list of servers to connect to.
 The format of each entry is:
 
-  (SERVER PORT [HANDLE] [PASSWORD-OR-FILENAME] [HELPER] [HELPER ARGS...])
+  (@var{server} @var{port} [@var{handle}] [@var{password-or-filename}] [@var{helper}] [@var{helper args}@enddots{}])
 @end defvar
 
+Internet Chess Servers based on
+@uref{http://www.freechess.org/, @acronym{FICS, Free Internet Chess Server}}
+and @uref{http://www.chessclub.com/, @acronym{ICC, Internet Chess Club}}
+are currently supported.
+
 @menu
-* Connecting to a server::      
-* Seeking an opponent for a new game::  
-* The sought game display::     
+* Connecting to a server::
+* Chess ICS Mode::
+* Command History::
+* Seeking an opponent for a new game::
+* The sought game display::
+* Watching other games::
 @end menu
 
-@node Connecting to a server, Seeking an opponent for a new game, Internet Chess Servers, Internet Chess Servers
+@node Connecting to a server, Chess ICS Mode, Internet Chess Servers, Internet Chess Servers
 @section Connecting to a server
 
 To open a new connection to an Internet Chess Server, use:
@@ -1517,9 +2068,266 @@ To open a new connection to an Internet Chess Server, use:
 
 @defun chess-ics server port &optional handle password-or-filename helper &rest helper-args
 Connect to an Internet Chess Server.
+
+If called interactively, you will be prompted to enter a server
+(from `chess-ics-server-list' and possibly identification credentials.
 @end defun
 
-@node Seeking an opponent for a new game, The sought game display, Connecting to a server, Internet Chess Servers
+@node Chess ICS Mode, Command History, Connecting to a server, Internet Chess Servers
+@section Chess ICS Mode
+@cindex Chess ICS mode
+@cindex mode, ICS
+
+  The major mode for ICS buffers is Chess ICS mode.  Many of its special
+commands are bound to the @kbd{C-c} prefix.  Here is a list of ICS mode
+commands:
+
+@table @kbd
+@item @key{RET}
+@kindex RET
+@findex comint-send-input
+Send the current line as input to the server
+(@code{comint-send-input}).  Any prompt at the beginning of the
+line is omitted.  If point is at the end of
+buffer, this is like submitting the command line in an ordinary
+interactive shell.  However, you can also invoke @key{RET} elsewhere
+in the ICS buffer to submit the current line as input.
+
+@item C-d
+@kindex C-d
+@findex comint-delchar-or-maybe-eof
+Either delete a character or send @acronym{EOF, End Of File}
+(@code{comint-delchar-or-maybe-eof}).  Typed at the end of the ICS
+buffer, this sends @acronym{EOF} to the server and terminates the
+connection.  Typed at any other
+position in the buffer, this deletes a character as usual.
+
+@item C-c C-a
+@kindex C-c C-a
+@findex comint-bol-or-process-mark
+Move to the beginning of the line, but after the prompt if any
+(@code{comint-bol-or-process-mark}).  If you repeat this command twice
+in a row, the second time it moves back to the process mark, which is
+the beginning of the input that you have not yet sent to the server.
+(Normally that is the same place---the end of the prompt on this
+line---but after @kbd{C-c @key{SPC}} the process mark may be in a
+previous line.)
+
+@item C-c @key{SPC}
+@kindex C-c SPC
+@findex comint-accumulate
+Accumulate multiple lines of input, then send them together
+(@code{comint-accumulate}).  This
+command inserts a newline before point, but does not send the preceding
+text as input to the server---at least, not yet.  Both lines, the one
+before this newline and the one after, will be sent together (along with
+the newline that separates them), when you type @key{RET}.
+
+@item C-c C-u
+@kindex C-c C-u
+@findex comint-kill-input
+Kill all text pending at end of buffer to be sent as input
+(@code{comint-kill-input}).  If point is not at end of buffer,
+this only kills the part of this text that precedes point.
+
+@item C-c C-w
+@kindex C-c C-w
+@findex backward-kill-word
+Kill a word before point (@code{backward-kill-word}).
+
+@item C-c C-o
+@kindex C-c C-o
+@findex comint-delete-output
+Delete the last batch of output from an ICS server command
+(@code{comint-delete-output}).  This is useful if a server command spews
+out lots of output that just gets in the way.
+
+@item C-c C-s
+@kindex C-c C-s
+@findex comint-write-output
+Write the last batch of output from an ICS server command to a file
+(@code{comint-write-output}).  With a prefix argument, the file is
+appended to instead.  Any prompt at the end of the output is not
+written.
+
+@item C-c C-r
+@itemx C-M-l
+@kindex C-c C-r
+@kindex C-M-l
+@findex comint-show-output
+Scroll to display the beginning of the last batch of output at the top
+of the window; also move the cursor there (@code{comint-show-output}).
+
+@item C-c C-e
+@kindex C-c C-e
+@findex comint-show-maximum-output
+Scroll to put the end of the buffer at the bottom of the window
+(@code{comint-show-maximum-output}).
+
+@item M-x comint-truncate-buffer
+@findex comint-truncate-buffer
+@vindex comint-buffer-maximum-size
+This command truncates the ICS buffer to a certain maximum number of
+lines, specified by the variable @code{comint-buffer-maximum-size}.
+Here's how to do this automatically each time you get output from the
+server:
+
+@example
+(add-hook 'comint-output-filter-functions
+          'comint-truncate-buffer)
+@end example
+@end table
+
+@cindex Comint mode
+@cindex mode, Comint
+  ICS mode is a derivative of Comint mode, a general-purpose mode for
+communicating with interactive subprocesses.  Most of the features of
+ICS mode actually come from Comint mode, as you can see from the
+command names listed above.
+
+@node Command History, Seeking an opponent for a new game, Chess ICS Mode, Internet Chess Servers
+@section ICS Command History
+
+  ICS buffers support two ways of repeating earlier commands.  You
+can use keys like those used for the minibuffer history; these work
+much as they do in the minibuffer, inserting text from prior commands
+while point remains always at the end of the buffer.  You can move
+through the buffer to previous inputs in their original place, then
+resubmit them or copy them to the end.
+
+@menu
+* ICS Command Ring::
+* ICS History Copying::
+@end menu
+
+@node ICS Command Ring, ICS History Copying, Command History, Command History
+@subsection ICS Command History Ring
+
+@table @kbd
+@findex comint-previous-input
+@kindex M-p
+@item M-p
+@itemx C-@key{UP}
+Fetch the next earlier old ICS command.
+
+@kindex M-n
+@findex comint-next-input
+@item M-n
+@itemx C-@key{DOWN}
+Fetch the next later old ICS command.
+
+@kindex M-r
+@findex comint-history-isearch-backward-regexp
+@item M-r
+Begin an incremental regexp search of old ICS commands.
+
+@item C-c C-x
+@kindex C-c C-x
+@findex comint-get-next-from-history
+Fetch the next subsequent command from the history.
+
+@item C-c .
+@kindex C-c .
+@findex comint-input-previous-argument
+Fetch one argument from an old ICS command.
+
+@item C-c C-l
+@kindex C-c C-l
+@findex comint-dynamic-list-input-ring
+Display the buffer's history of ICS commands in another window
+(@code{comint-dynamic-list-input-ring}).
+@end table
+
+  ICS buffers provide a history of previously entered
+commands.  To reuse commands from the history, use the editing
+commands @kbd{M-p}, @kbd{M-n}, @kbd{M-r} and @kbd{M-s}.  These work
+just like the minibuffer history commands (@pxref{Minibuffer
+History, , , emacs}), except that they operate within the ICS buffer rather
+than the minibuffer.
+
+  @kbd{M-p} fetches an earlier ICS command to the end of the ICS
+buffer.  Successive use of @kbd{M-p} fetches successively earlier
+commands, each replacing any text that was already present as
+potential input.  @kbd{M-n} does likewise except that it finds
+successively more recent ICS commands from the buffer.
+@kbd{C-@key{UP}} works like @kbd{M-p}, and @kbd{C-@key{DOWN}} like
+@kbd{M-n}.
+
+  The history search command @kbd{M-r} begins an incremental regular
+expression search of previous ICS commands.  After typing @kbd{M-r},
+start typing the desired string or regular expression; the last
+matching ICS command will be displayed in the current line.
+Incremental search commands have their usual effects---for instance,
+@kbd{C-s} and @kbd{C-r} search forward and backward for the next match
+(@pxref{Incremental Search, , , emacs}).  When you find the desired input, type
+@key{RET} to terminate the search.  This puts the input in the command
+line.  Any partial input you were composing before navigating the
+history list is restored when you go to the beginning or end of the
+history ring.
+
+  Often it is useful to reexecute several successive ICS commands that
+were previously executed in sequence.  To do this, first find and
+reexecute the first command of the sequence.  Then type @kbd{C-c C-x};
+that will fetch the following command---the one that follows the command
+you just repeated.  Then type @key{RET} to reexecute this command.  You
+can reexecute several successive commands by typing @kbd{C-c C-x
+@key{RET}} over and over.
+
+  The command @kbd{C-c .}@: (@code{comint-input-previous-argument})
+copies an individual argument from a previous command, like
+@kbd{@key{ESC} .} in Bash.  The simplest use copies the last argument from the
+previous ICS command.  With a prefix argument @var{n}, it copies the
+@var{n}th argument instead.  Repeating @kbd{C-c .} copies from an
+earlier ICS command instead, always using the same value of @var{n}
+(don't give a prefix argument when you repeat the @kbd{C-c .}
+command).
+
+  These commands get the text of previous ICS commands from a special
+history list, not from the ICS buffer itself.  Thus, editing the ICS
+buffer, or even killing large parts of it, does not affect the history
+that these commands access.
+
+@node ICS History Copying,  , ICS Command Ring, Command History
+@subsection ICS History Copying
+
+@table @kbd
+@kindex C-c C-p
+@findex comint-previous-prompt
+@item C-c C-p
+Move point to the previous prompt (@code{comint-previous-prompt}).
+
+@kindex C-c C-n
+@findex comint-next-prompt
+@item C-c C-n
+Move point to the following prompt (@code{comint-next-prompt}).
+
+@kindex C-c RET
+@findex comint-copy-old-input
+@item C-c @key{RET}
+Copy the input command at point, inserting the copy at the end of the
+buffer (@code{comint-copy-old-input}).  This is useful if you move
+point back to a previous command.  After you copy the command, you can
+submit the copy as input with @key{RET}.  If you wish, you can edit
+the copy before resubmitting it.  If you use this command on an output
+line, it copies that line to the end of the buffer.
+
+@item Mouse-2
+If @code{comint-use-prompt-regexp} is @code{nil} (the default), copy
+the old input command that you click on, inserting the copy at the end
+of the buffer (@code{comint-insert-input}).  If
+@code{comint-use-prompt-regexp} is non-@code{nil}, or if the click is
+not over old input, just yank as usual.
+@end table
+
+  Moving to a previous input and then copying it with @kbd{C-c
+@key{RET}} or @kbd{Mouse-2} produces the same results---the same
+buffer contents---that you would get by using @kbd{M-p} enough times
+to fetch that previous input from the history list.  However, @kbd{C-c
+@key{RET}} copies the text from the buffer, which can be different
+from what is in the history list if you edit the input text in the
+buffer after it has been sent.
+
+@node Seeking an opponent for a new game, The sought game display, Command History, Internet Chess Servers
 @section Seeking an opponent for a new game
 
 After you connected to a server, one of the first things you will
@@ -1527,37 +2335,82 @@ want to do is find an oponent for a new game.  You can use the
 ICS command "seek" to announce your availability for a chess game
 to interested people.
 
-@node The sought game display,  , Seeking an opponent for a new game, Internet Chess Servers
+For example:
+
+@example
+fics% seek 10 10 rated
+@end example
+
+This will announce your availability to play a rated game with 10 minutes
+initial time-control for each player, and 10 seconds added
+for every move made.
+
+@node The sought game display, Watching other games, Seeking an opponent for a new game, Internet Chess Servers
 @section The sought game display
 
 There is a special mode for displaying games sought by other users
-on an Internet Chess Server.  Provided you didn't turn off seek ads
+on an Internet Chess Server.  Provided you didn't turn off seek advertisments
 manually (for instance by setting the seek variable to 0 (off) on the
 ICS server by issueing "set seek 0"), the first seek advertisment
-automatically pops up a new window which is in `chess-ics-sought-mode'.
+automatically pops up a new window which is in `chess-ics-ads-mode', a
+derivative of `tabulated-list-mode'.
 
-@c lispfun chess-ics-sought-mode
+@c lispfun chess-ics-ads-mode
 
-@defun chess-ics-sought-mode 
+@defun chess-ics-ads-mode 
 A mode for displaying @var{ics} game seek advertisments.
 
-This mode runs the hook `chess-ics-sought-mode-hook', as the final step
+This mode runs the hook `chess-ics-ads-mode-hook', as the final step
 during initialization.
 
 key             binding
 ---             -------
 
-@var{ret}		chess-ics-sought-accept
-@var{spc}		chess-ics-sought-toggle-sort-direction
 ?		describe-mode
-s		chess-ics-sought-toggle-sort-state
+@var{ret}		chess-ics-sought-accept
 <mouse-2>	chess-ics-sought-accept
 
 
 @end defun
 
-In this buffer, use mouse-2 or @kbd{RET} on a line to accept that
+@kindex RET
+In this buffer, use mouse-2 or @kbd{@key{RET}} on a line to accept that
 particular game and play it.
+
+@node Watching other games,  , The sought game display, Internet Chess Servers
+@section Watching other games
+
+You can also watch other games currently being played on @acronym{ICS}.
+Even services like @samp{LectureBot} from @acronym{FICS} can
+be used.
+
+@example
+fics% observe lecturebot
+You are now observing game 5.
+Game 5: LectureBot (0) LectureBot (0) unrated untimed 0 0
+
+LectureBot(TD)(----)[5] kibitzes: (Note: A passed pawn is a pawn that
+          does not have enemy pawns blocking the path either on the
+          same or adjacent files).
+LectureBot(TD)(----)[5] kibitzes: Connected passed pawns are a pain to
+          have to deal with. They are usually a winning advantage if
+          they cannot be blockaded. The blockading piece has to give
+          up duties elsewhere. It's almost like being a piece up.
+fics% unobserv lecturebot
+Removing game 5 from observation list.
+fics% 
+@end example
+
+Once you start to observe a particular game or player, the
+current position will pop up in a chessboard display.
+As you are an observer, you will not be able to enter new moves.
+However, you should be able to navigate back and forth in the history
+of the game.
+
+If a new move is made by any party in the game and you are currently
+displaying the last position in the game, the chessboard display
+will automaticall update to reflect the new position and show
+the last move in the mode line.
 
 @node Concept Index, Function and Variable Index, Internet Chess Servers, Top
 @unnumbered Concept Index
