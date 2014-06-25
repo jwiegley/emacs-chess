@@ -1,6 +1,6 @@
 \input texinfo  @c -*-texinfo-*-
 
-@setfilename ../chess.info
+@setfilename chess.info
 @documentencoding UTF-8
 @documentlanguage en
 @settitle Emacs Chess: chess.el
