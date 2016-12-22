@@ -26,7 +26,7 @@
 (require 'chess-var)
 
 (defgroup chess-crafty nil
-  "The publically available chess engine 'crafty'."
+  "The publicly available chess engine 'crafty'."
   :group 'chess-engine)
 
 (defcustom chess-crafty-path (or (executable-find "crafty")

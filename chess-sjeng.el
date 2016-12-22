@@ -24,7 +24,7 @@
 (require 'chess-fen)
 
 (defgroup chess-sjeng nil
-  "The publically available chess engine 'sjeng'."
+  "The publicly available chess engine 'sjeng'."
   :group 'chess-engine
   :link '(url-link "http://sjeng.sourceforge.net"))
 

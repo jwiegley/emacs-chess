@@ -25,7 +25,7 @@
 (require 'chess-fen)
 
 (defgroup chess-gnuchess nil
-  "The publically available chess engine 'gnuchess'."
+  "The publicly available chess engine 'gnuchess'."
   :group 'chess-engine)
 
 (defcustom chess-gnuchess-path (let ((exec-path (cons "/usr/games" exec-path)))
