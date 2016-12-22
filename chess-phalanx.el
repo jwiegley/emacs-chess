@@ -24,7 +24,7 @@
 (require 'chess-common)
 
 (defgroup chess-phalanx nil
-  "The publically available chess engine 'phalanx'."
+  "The publicly available chess engine 'phalanx'."
   :group 'chess-engine
   :link '(url-link "http://phalanx.sourceforge.net/"))
 

@@ -23,7 +23,7 @@
 (require 'chess-uci)
 
 (defgroup chess-glaurung nil
-  "The publically available chess engine 'glaurung'."
+  "The publicly available chess engine 'glaurung'."
   :group 'chess-engine
   :link '(url-link "http://www.glaurungchess.com/"))
 

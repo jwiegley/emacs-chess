@@ -23,7 +23,7 @@
 (require 'chess-uci)
 
 (defgroup chess-fruit nil
-  "The publically available chess engine 'fruit'."
+  "The publicly available chess engine 'fruit'."
   :group 'chess-engine
   :link '(url-link "http://www.fruitchess.com/"))
 

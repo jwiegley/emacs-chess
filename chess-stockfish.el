@@ -23,7 +23,7 @@
 (require 'chess-uci)
 
 (defgroup chess-stockfish nil
-  "The publically available chess engine 'stockfish'."
+  "The publicly available chess engine 'stockfish'."
   :group 'chess-engine
   :link '(url-link "http://www.stockfishchess.com"))
 
