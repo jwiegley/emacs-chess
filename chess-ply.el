@@ -176,6 +176,28 @@
   (cl-assert (vectorp position))
   (list position))
 
+
+(defvar promotion-options
+  '(queen rook bishop knight))
+
+(defun ask-promotion (white)
+  (let ((p (ido-completing-read "Symbol? " (mapcar #'symbol-name promotion-options))))
+    (cond ((string= "queen" p)
+           (if white ?Q ?q))
+
+          ((string= "rook" p)
+           (if white ?R ?r))
+
+          ((string= "bishop" p)
+           (if white ?B ?b))
+
+          ((string= "knight" p)
+           (if white ?N ?n))
+
+          ;; Promote to queen as fallback
+          (t (if white ?Q ?q)))))
+
+
 (defun chess-ply-create (position &optional valid-p &rest changes)
   "Create a ply from the given POSITION by applying the supplied CHANGES.
 This function will guarantee the resulting ply is legal, and will also
@@ -223,7 +245,11 @@ maneuver."
 	      (when (and (not (memq :promote changes))
 			 (= (if color 0 7)
 			    (chess-index-rank (cadr changes))))
-		(chess-error 'ambiguous-promotion))
+                (let ((promo (ask-promotion color)))
+                  (setq changes
+                        (append changes (list :promote promo)))
+                  
+                  (setq ply (cons position changes))))
 
 	      ;; is this an en-passant capture?
 	      (when (let ((ep (chess-pos-en-passant position)))
