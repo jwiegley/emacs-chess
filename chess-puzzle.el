@@ -44,6 +44,25 @@
   :type 'boolean
   :group 'chess-puzzle)
 
+(defcustom chess-puzzle-default-file nil
+  "Default file in which to search for chess puzzles.
+
+If non-nil, `chess-puzzle' will interpret the value as either a
+puzzle file to load or a directory in which to look for puzzle
+file to load.  When nil, `chess-puzzle' will read files from
+current directory."
+  :type 'file
+  :group 'chess-puzzle)
+
+(defcustom chess-puzzle-autoload-file nil
+  "Avoid prompting for puzzle file if `chess-puzzle-default-file' is a pgn file.
+
+If non-nil, don't use `chess-puzzle-default-file' as the default
+in the read file prompt for `chess-puzzle', and instead simply load
+it.  Useful if you have all of your puzzles in a single file."
+  :type 'boolean
+  :group 'chess-puzzle)
+
 (defvar chess-puzzle-indices nil)
 (defvar chess-puzzle-position nil)
 
@@ -59,7 +78,25 @@
   "Pick a random puzzle from FILE, and solve it against the default engine.
 The spacebar in the display buffer is bound to `chess-puzzle-next',
 making it easy to go on to the next puzzle once you've solved one."
-  (interactive "fRead chess puzzles from: ")
+  (interactive
+   (list (let* ((file-name (or chess-puzzle-default-file
+                    (file-name-directory (buffer-file-name))))
+                (file-p (not (file-directory-p file-name)))
+                (auto-load (and file-p chess-puzzle-autoload-file)))
+     (if (not auto-load)
+         (read-file-name
+          (format "Read chess puzzles from%s: "
+             (if file-p
+                 (concat
+                    " ("
+                    (abbreviate-file-name file-name)
+                    ")")
+               ""))
+          (file-name-directory file-name)
+          (when file-p file-name) t)
+       file-name))))
+
+  (abbreviate-file-name (buffer-file-name))
   (let* ((database (chess-database-open file))
 	 (objects (and database (chess-session)))
 	 (engine (car objects))
