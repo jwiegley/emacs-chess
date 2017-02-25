@@ -74,6 +74,26 @@ it.  Useful if you have all of your puzzles in a single file."
     (end-of-puzzles . "There are no more puzzles in this collection")))
 
 ;;;###autoload
+(defun chess-puzzle-set-defualt-file (file)
+  "Set the default puzzle file to FILE for the current session."
+  (interactive
+   (list (let* ((file-name (or chess-puzzle-default-file
+                               (file-name-directory (buffer-file-name))))
+                (file-p (not (file-directory-p file-name)))
+                (def-file (read-file-name
+                           "Set puzzle file to: "
+                           (file-name-directory file-name)
+                           (when file-p file-name) t)))
+           (if (file-directory-p def-file)
+               (file-name-as-directory def-file)
+             def-file))))
+  (setq chess-puzzle-default-file file)
+  (when (yes-or-no-p "Load a chess puzzle?: ")
+    (let ((chess-puzzle-autoload-file t))
+      (unless (call-interactively 'chess-puzzle))))
+  (message "chess-puzzle-default-file set to '%s'" file))
+
+;;;###autoload
 (defun chess-puzzle (file &optional index) ;FIXME: index not used!
   "Pick a random puzzle from FILE, and solve it against the default engine.
 The spacebar in the display buffer is bound to `chess-puzzle-next',
@@ -89,7 +109,7 @@ making it easy to go on to the next puzzle once you've solved one."
              (if file-p
                  (concat
                     " ("
-                    (abbreviate-file-name file-name)
+                    (file-name-nondirectory file-name)
                     ")")
                ""))
           (file-name-directory file-name)
