@@ -75,7 +75,9 @@ it.  Useful if you have all of your puzzles in a single file."
 
 ;;;###autoload
 (defun chess-puzzle-set-defualt-file (file)
-  "Set the default puzzle file to FILE for the current session."
+  "Set the default puzzle file to FILE for the current session.
+
+Useful mostly if you use `chess-puzzle-autoload-file'."
   (interactive
    (list (let* ((file-name (or chess-puzzle-default-file
                                (file-name-directory (buffer-file-name))))
@@ -90,7 +92,7 @@ it.  Useful if you have all of your puzzles in a single file."
   (setq chess-puzzle-default-file file)
   (when (yes-or-no-p "Load a chess puzzle?: ")
     (let ((chess-puzzle-autoload-file t))
-      (unless (call-interactively 'chess-puzzle))))
+      (call-interactively 'chess-puzzle)))
   (message "chess-puzzle-default-file set to '%s'" file))
 
 ;;;###autoload
@@ -116,7 +118,6 @@ making it easy to go on to the next puzzle once you've solved one."
           (when file-p file-name) t)
        file-name))))
 
-  (abbreviate-file-name (buffer-file-name))
   (let* ((database (chess-database-open file))
 	 (objects (and database (chess-session)))
 	 (engine (car objects))
