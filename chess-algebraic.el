@@ -142,7 +142,7 @@ This regexp handles both long and short form.")
 			     (list which target))))
 		     (chess-error 'no-candidates move))))))
 	    (when promotion
-	      (nconc changes (list :promote (aref promotion 0))))))
+	      (nconc changes (list :promote (aref (upcase promotion) 0))))))
 
 	(when changes
 	  (if (and trust mate)
