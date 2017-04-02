@@ -59,13 +59,19 @@
 (require 'chess-pos)
 
 (defconst chess-algebraic-regexp
-  (rx (group (or (or "O-O" "O-O-O")
-		 (and (optional (group (char ?N ?B ?R ?Q ?K)))
+  (rx (group (or (or "O-O" "O-O-O" "0-0" "0-0-0")
+		 (and (optional (group (char ?N ?B ?R ?Q ?K
+					     ?♔ ?♕ ?♖ ?♗ ?♘
+					     ?♚ ?♛ ?♜ ?♝ ?♞)))
 		      (optional (char ?/))
 		      (group (optional (char "a-h")) (optional (char "1-8")))
 		      (optional (group (char ?- ?x)))
 		      (group (char "a-h") (char "1-8"))
-		      (optional (group ?= (group (char ?N ?B ?R ?Q ?K)))))))
+		      (optional (group (optional (char ?=))
+                                       (group (char ?N ?B ?R ?Q ?K
+                                                    ?n ?b ?r ?q ?k
+                                                    ?♔ ?♕ ?♖ ?♗ ?♘
+                                                    ?♚ ?♛ ?♜ ?♝ ?♞)))))))
       (optional (group (char ?+ ?#))))
   "A regular expression that matches all possible algebraic moves.
 This regexp handles both long and short form.")
