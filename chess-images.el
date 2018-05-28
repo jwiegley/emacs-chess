@@ -58,7 +58,7 @@
   :group 'chess-images)
 
 (defcustom chess-images-directory
-  (if (file-directory-p "/usr/share/games/xboard/pixmaps")
+  (if (directory-files "/usr/share/games/xboard/pixmaps" nil "\\.xpm")
       "/usr/share/games/xboard/pixmaps"
     (expand-file-name "pieces/xboard"
 		      (file-name-directory
