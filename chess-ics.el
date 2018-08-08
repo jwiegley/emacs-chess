@@ -470,6 +470,7 @@ See `chess-ics-game'.")
        (chess-game-set-data game 'ics-game-number game-number)
        (chess-game-set-data game 'ics-buffer (current-buffer))
        (chess-game-set-tag game "Site" chess-ics-server)
+       (chess-engine-set-response-handler (current-buffer))
        (while tags
 	 (cl-assert (keywordp (car tags)))
 	 (chess-game-set-tag
