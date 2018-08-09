@@ -223,7 +223,7 @@ if INDEX is nil)."
 
 (defun chess-game-ply (game &optional index)
   "Return a ply of GAME.
-If INDEX is non-nil, the last played ply is returned."
+If INDEX is nil, the last played ply is returned."
   (cl-assert game)
   (if index
       (nth index (chess-game-plies game))

@@ -176,22 +176,21 @@
   (cl-assert (vectorp position))
   (list position))
 
-
 (defconst promotion-options
-  '((queen  ?Q ?q)
-    (rook   ?R ?r)
-    (bishop ?B ?b)
-    (knight ?N ?n)))
+  '((?q ?Q "[q]ueen")
+    (?r ?R "(r)ook")
+    (?b ?B "(b)ishop")
+    (?n ?N "k(n)ight")))
 
 (defun ask-promotion (white)
-  (nth (if white 1 2)
-       (assoc (intern-soft
-               (or (completing-read
-                    "Symbol? "
-                    (mapcar (lambda (x) (symbol-name (car x)))
-                            promotion-options))
-                   "queen"))
-              promotion-options)))
+  (let ((prompts (mapcar (lambda (x) (nth 2 x)) promotion-options))
+        (choices (append '(?\n ?\r) (mapcar (lambda (x) (car x)) promotion-options))))
+    (nth (if white 1 0)
+         (or 
+          (assoc
+           (read-char-choice (concat "Promote to: " (mapconcat 'identity prompts " ") " ? ")
+                             choices t) promotion-options)
+          (car promotion-options)))))
 
 (defun chess-ply-create (position &optional valid-p &rest changes)
   "Create a ply from the given POSITION by applying the supplied CHANGES.
