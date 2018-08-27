@@ -40,12 +40,14 @@
 (defvar chess-input-moves-pos nil)
 (defvar chess-input-moves nil)
 (defvar chess-input-position-function nil)
+(defvar chess-input-my-color-function nil)
 (defvar chess-input-move-function nil)
 
 (make-variable-buffer-local 'chess-input-move-string)
 (make-variable-buffer-local 'chess-input-moves-pos)
 (make-variable-buffer-local 'chess-input-moves)
 (make-variable-buffer-local 'chess-input-position-function)
+(make-variable-buffer-local 'chess-input-my-color-function)
 (make-variable-buffer-local 'chess-input-move-function)
 
 (defun chess-input-test-move (ply)
@@ -90,7 +92,7 @@
 (defun chess-input-shortcut (&optional display-only)
   (interactive)
   (let* ((position (funcall chess-input-position-function))
-	 (color (chess-pos-side-to-move position))
+	 (color (funcall chess-input-my-color-function))
 	 char)
     (unless (memq last-command '(chess-input-shortcut
 				 chess-input-shortcut-delete))

@@ -132,7 +132,8 @@ PERSPECTIVE is t for white or nil for black."
     (goto-char pos)))
 
 (defun chess-ics1-highlight (index &optional mode)
-  (let ((pos (chess-display-index-pos nil index)))
+  (let ((pos (chess-display-index-pos nil index))
+        (piece (chess-pos-piece (chess-display-position nil) index)))
     (put-text-property pos (save-excursion
 			     (goto-char pos)
 			     (skip-chars-forward "^|")
@@ -140,6 +141,10 @@ PERSPECTIVE is t for white or nil for black."
 		       'face (cond
 			      ((eq mode :selected)
 			       'chess-ics1-highlight-face)
+			      ((eq mode :unselected)
+			       (if (> piece ?a)
+                                   'chess-ics1-black-face
+                                 'chess-ics1-white-face))
 			      (t
 			       (chess-display-get-face mode))))))
 

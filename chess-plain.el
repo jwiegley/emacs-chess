@@ -324,11 +324,16 @@ PERSPECTIVE is t for white or nil for black."
       (goto-char pos))))
 
 (defun chess-plain-highlight (index &optional mode)
-  (let ((pos (chess-display-index-pos nil index)))
+  (let ((pos (chess-display-index-pos nil index))
+        (piece (chess-pos-piece (chess-display-position nil) index)))
     (put-text-property pos (1+ pos) 'face
 		       (cond
 			((eq mode :selected)
 			 'chess-plain-highlight-face)
+                        ((eq mode :unselected)
+                         (if (> piece ?a)
+                             'chess-plain-black-face
+                           'chess-plain-white-face))
 			(t
 			 (chess-display-get-face mode))))))
 

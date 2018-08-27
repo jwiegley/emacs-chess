@@ -305,22 +305,31 @@ chess board are light or dark depending on location."
     (goto-char pos)))
 
 (defun chess-images-highlight (index &optional mode)
-  "Highlight the piece on the board at INDEX, using the given MODE.
-Common modes are:
-  `selected'    show that the piece has been selected for movement.
-  `unselected'  show that the piece has been unselected."
+  "Highlight the piece on the board at INDEX, using the given MODE, which 
+is often an arbitrary color or
+  :selected    show that the piece has been selected for movement.
+  :unselected  show that the piece has been unselected."
   (let* ((pos (chess-display-index-pos nil index))
-	 (highlight (copy-alist (get-text-property pos 'display))))
-    (setcar (last highlight)
-	    (list (cons "light_square" (if (eq mode :selected)
-					   chess-images-highlight-color
-					 mode))
-		  (cons "dark_square" (if (eq mode :selected)
-					  chess-images-highlight-color
-					mode))
-		  (cons "background" (if (eq mode :selected)
-					 chess-images-highlight-color
-				       mode))))
+	 (highlight (copy-alist (get-text-property pos 'display)))
+         (light-color (if (eq mode :selected)
+                          chess-images-highlight-color
+                        (if (eq mode :unselected) chess-images-light-color mode)))
+         (dark-color (if (eq mode :selected)
+                         chess-images-highlight-color
+                       (if (eq mode :unselected) chess-images-dark-color mode)))
+         (square-color (% (+ (chess-index-file index) (chess-index-rank index)) 2))
+         (background (if (eq mode :selected)
+                         chess-images-highlight-color
+                       (if (eq mode :unselected) 
+                           (if (= square-color 0) chess-images-light-color chess-images-dark-color) mode)))
+         (color-syms (car (last highlight))))
+    (setcar (last highlight) 
+            (mapcar (lambda (cp)
+                      (cond ((string= (car cp) "light_square") (cons (car cp) light-color))
+                            ((string= (car cp) "dark_square") (cons (car cp) dark-color))
+                            ((string= (car cp) "background") (cons (car cp) background))
+                            (t cp)))
+                    color-syms))
     (put-text-property pos (1+ pos) 'display highlight)))
 
 (chess-message-catalog 'english

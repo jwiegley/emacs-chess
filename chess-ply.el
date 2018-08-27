@@ -148,7 +148,8 @@
 (defun chess-ply-castling-changes (position &optional long king-index)
   "Create castling changes; this function supports Fischer Random castling."
   (cl-assert (vectorp position))
-  (let* ((color (chess-pos-side-to-move position))
+  (let* ((color (if king-index (< (chess-pos-piece position king-index) ?a)
+                  (chess-pos-side-to-move position)))
 	 (king (or king-index (chess-pos-king-index position color)))
 	 (rook (chess-pos-can-castle position (if color
 						  (if long ?Q ?K)
@@ -201,89 +202,90 @@ also extend castling, and will prompt for a promotion piece.
 Note: Do not pass in the rook move if CHANGES represents a castling
 maneuver."
   (cl-assert (vectorp position))
-  (let* ((ply (cons position changes))
-	 (color (chess-pos-side-to-move position))
-	 piece)
-    (if (or (null changes) (symbolp (car changes)))
-	ply
-      ;; validate that `changes' can be legally applied to the given
-      ;; position
-      (when (or valid-p
-		(chess-legal-plies position :index (car changes)
-				   :target (cadr changes)))
-	(unless chess-ply-checking-mate
-	  (setq piece (chess-pos-piece position (car changes)))
+  (let ((ply (cons position changes)))
+    (if (integerp (car changes))
+      (let* ((color (< (chess-pos-piece position (car changes)) ?a))
+             (is-pre-move (not (eq color (chess-pos-side-to-move position))))
+             piece)
+        ;; validate that `changes' can be legally applied to the given
+        ;; position
+        (if (or valid-p
+                (chess-legal-plies position :index (car changes)
+                                   :target (cadr changes)))
+          (unless chess-ply-checking-mate
+            (setq piece (chess-pos-piece position (car changes)))
+            ;; is this a castling maneuver?
+            (if (and (= piece (if color ?K ?k))
+                     (not (or (memq :castle changes)
+                              (memq :long-castle changes))))
+                (let* ((target (cadr changes))
+                       (file (chess-index-file target))
+                       (long (= 2 file))
+                       new-changes)
+                  (if (and (or (and (= file 6)
+                                    (chess-pos-can-castle position
+                                                          (if color ?K ?k)))
+                               (and long
+                                    (chess-pos-can-castle position
+                                                          (if color ?Q ?q))))
+                           (setq new-changes
+                                 (chess-ply-castling-changes position long
+                                                             (car changes))))
+                      (setcdr ply new-changes)))
 
-	  ;; is this a castling maneuver?
-	  (if (and (= piece (if color ?K ?k))
-		   (not (or (memq :castle changes)
-			    (memq :long-castle changes))))
-	      (let* ((target (cadr changes))
-		     (file (chess-index-file target))
-		     (long (= 2 file))
-		     new-changes)
-		(if (and (or (and (= file 6)
-				  (chess-pos-can-castle position
-							(if color ?K ?k)))
-			     (and long
-				  (chess-pos-can-castle position
-							(if color ?Q ?q))))
-			 (setq new-changes
-			       (chess-ply-castling-changes position long
-							   (car changes))))
-		    (setcdr ply new-changes)))
+              (when (eq piece (if color ?P ?p))
+                ;; is this a pawn move to the ultimate rank?  if so, check
+                ;; that the :promote keyword is present.
+                (when (and (not (memq :promote changes))
+                           (= (if color 0 7)
+                              (chess-index-rank (cadr changes))))
+                  (let ((promo (if is-pre-move (nth (if color 1 0) (car promotion-options))
+                                 (ask-promotion color))))
+                    (nconc changes (list :promote promo))
+                    (setq ply (cons position changes))))
 
-	    (when (eq piece (if color ?P ?p))
-	      ;; is this a pawn move to the ultimate rank?  if so, check
-	      ;; that the :promote keyword is present.
-	      (when (and (not (memq :promote changes))
-			 (= (if color 0 7)
-			    (chess-index-rank (cadr changes))))
-                (let ((promo (ask-promotion color)))
-                  (nconc changes (list :promote promo))
-                  (setq ply (cons position changes))))
+                ;; is this an en-passant capture?
+                (when (let ((ep (chess-pos-en-passant position)))
+                        (when ep
+                          (eq ep (funcall (if color #'+ #'-) (cadr changes) 8))))
+                  (nconc changes (list :en-passant)))))
 
-	      ;; is this an en-passant capture?
-	      (when (let ((ep (chess-pos-en-passant position)))
-		      (when ep
-			(eq ep (funcall (if color #'+ #'-) (cadr changes) 8))))
-		(nconc changes (list :en-passant)))))
-
-	  ;; we must determine whether this ply results in a check,
-	  ;; checkmate or stalemate
-	  (unless (or chess-pos-always-white
-		      (memq :check changes)
-		      (memq :checkmate changes)
-		      (memq :stalemate changes))
-	    (let* ((chess-ply-checking-mate t)
-		   ;; jww (2002-04-17): this is a memory waste?
-		   (next-pos (chess-ply-next-pos ply))
-		   (next-color (not color))
-		   (king (chess-pos-king-index next-pos next-color))
-		   (in-check (catch 'in-check
-			       (chess-search-position next-pos king color t t))))
-	      ;; first, see if the moves leaves the king in check.
-	      ;; This is tested by seeing if any of the opponent's
-	      ;; pieces can reach the king in the position that will
-	      ;; result from this ply.  If the king is in check, we
-	      ;; will then test for checkmate by seeing if any of his
-	      ;; subjects can move or not.  That test will also
-	      ;; confirm stalemate for us.
-	      (if (or in-check
-		      (null (chess-legal-plies next-pos :any :index king)))
-		  ;; is the opponent's king in check/mate or stalemate
-		  ;; now, as a result of the changes?
-		  (if (chess-legal-plies next-pos :any :color next-color)
-		      (if in-check
-			  (nconc changes (list (chess-pos-set-status
-						next-pos :check))))
-		    (nconc changes (list (chess-pos-set-status
-					  next-pos
-					  (if in-check
-					      :checkmate
-					    :stalemate)))))))))
-	;; return the annotated ply
-	ply))))
+            ;; we must determine whether this ply results in a check,
+            ;; checkmate or stalemate
+            (unless (or chess-pos-always-white
+                        (memq :check changes)
+                        (memq :checkmate changes)
+                        (memq :stalemate changes))
+              (let* ((chess-ply-checking-mate t)
+                     ;; jww (2002-04-17): this is a memory waste?
+                     (next-pos (chess-ply-next-pos ply))
+                     (next-color (not color))
+                     (king (chess-pos-king-index next-pos next-color))
+                     (in-check (catch 'in-check
+                                 (chess-search-position next-pos king color t t))))
+                ;; first, see if the moves leaves the king in check.
+                ;; This is tested by seeing if any of the opponent's
+                ;; pieces can reach the king in the position that will
+                ;; result from this ply.  If the king is in check, we
+                ;; will then test for checkmate by seeing if any of his
+                ;; subjects can move or not.  That test will also
+                ;; confirm stalemate for us.
+                (if (or in-check
+                        (null (chess-legal-plies next-pos :any :index king)))
+                    ;; is the opponent's king in check/mate or stalemate
+                    ;; now, as a result of the changes?
+                    (if (chess-legal-plies next-pos :any :color next-color)
+                        (if in-check
+                            (nconc changes (list (chess-pos-set-status
+                                                  next-pos :check))))
+                      (nconc changes (list (chess-pos-set-status
+                                            next-pos
+                                            (if in-check
+                                                :checkmate
+                                              :stalemate)))))))))
+	(setq ply nil))))
+    ;; return the annotated ply
+    ply))
 
 (defsubst chess-ply-final-p (ply)
   "Return non-nil if this is the last ply of a game/variation."
@@ -355,7 +357,11 @@ position object passed in."
    (t
     (let* ((piece (cadr (memq :piece keywords)))
 	   (color (if piece (< piece ?a)
-		    (chess-pos-side-to-move position)))
+                    (if (memq :index keywords)
+                        (< (chess-pos-piece position
+                                            (cadr (memq :index keywords))) ?a)
+                      (chess-pos-side-to-move position))))
+           (not-my-turn (not (eq color (chess-pos-side-to-move position))))
 	   (specific-target (cadr (memq :target keywords)))
 	   (test-piece
 	    (upcase (or piece
@@ -399,7 +405,7 @@ position object passed in."
 					      (if color
 						  chess-direction-northeast
 						chess-direction-southwest)))
-	      (if (chess-pos-piece-p position pos (not color))
+	      (if (or not-my-turn (chess-pos-piece-p position pos (not color)))
 		  (chess-ply--add nil nil pos)
 		;; check for en passant capture toward kingside
 		(when (and ep (= ep (funcall (if color #'+ #'-) pos 8)))
@@ -408,7 +414,7 @@ position object passed in."
 					      (if color
 						  chess-direction-northwest
 						chess-direction-southeast)))
-	      (if (chess-pos-piece-p position pos (not color))
+	      (if (or not-my-turn (chess-pos-piece-p position pos (not color)))
 		  (chess-ply--add nil nil pos)
 		;; check for en passant capture toward queenside
 		(when (and ep (eq ep (funcall (if color #'+ #'-) pos 8)))
@@ -427,15 +433,16 @@ position object passed in."
 		  (progn
 		    (chess-ply--add nil nil pos)
 		    (setq pos (chess-next-index pos dir)))
-		(if (chess-pos-piece-p position pos (not color))
+		(if (or not-my-turn (chess-pos-piece-p position pos (not color)))
 		    (chess-ply--add nil nil pos))
 		(setq pos nil)))))
-
+         
 	 ;; the king is a trivial case of the queen, except when castling
 	 ((= test-piece ?K)
 	  (dolist (dir chess-king-directions)
 	    (setq pos (chess-next-index candidate dir))
-	    (if (and pos (or (chess-pos-piece-p position pos ? )
+	    (if (and pos (or not-my-turn
+                             (chess-pos-piece-p position pos ? )
 			     (chess-pos-piece-p position pos (not color))))
 		(chess-ply--add nil nil pos)))
 
@@ -445,7 +452,7 @@ position object passed in."
 							   candidate)))
 		  (if changes
 		      (if chess-ply-throw-if-any
-                          (throw 'any-found t)
+			  (throw 'any-found t)
                         (if (or (not specific-target)
                                 (= specific-target (cadr changes)))
                             (push (cons position changes) plies))))))
@@ -466,7 +473,8 @@ position object passed in."
 	  (dolist (dir chess-knight-directions)
 	    ;; up the current file
 	    (if (and (setq pos (chess-next-index candidate dir))
-		     (or (chess-pos-piece-p position pos ? )
+		     (or not-my-turn
+                         (chess-pos-piece-p position pos ? )
 			 (chess-pos-piece-p position pos (not color))))
 		(chess-ply--add nil nil pos))))
 

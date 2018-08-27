@@ -85,6 +85,7 @@
 
 (require 'chess-message)
 (require 'cl-lib)
+
 (eval-when-compile
   (cl-proclaim '(optimize (speed 3) (safety 2))))
 
@@ -1073,28 +1074,35 @@ in check)."
   (cl-assert (and (>= target 0) (< target 64)))
   (cl-assert (listp candidates))
   (cl-assert (> (length candidates) 0))
-  (let ((cand candidates)
-	(piece (chess-pos-piece position (car candidates)))
-	(other-piece (chess-pos-piece position target))
-	en-passant-square last-cand king-pos)
+  (let* ((cand candidates)
+         (piece (chess-pos-piece position (car candidates)))
+         (other-piece (chess-pos-piece position target))
+         (is-pre-move (not (eq color (chess-pos-side-to-move position))))
+         (ep (chess-pos-en-passant position))
+         (color-ep (if ep (< (chess-pos-piece position ep) ?a) t))
+         en-passant-square last-cand king-pos)
     (while cand
       (unwind-protect
 	  (progn
 	    ;; determine the resulting position
 	    (chess-pos-set-piece position (car cand) ? )
 	    (chess-pos-set-piece position target piece)
-	    (when (and (= piece (if color ?P ?p))
-		       (let ((ep (chess-pos-en-passant position)))
-			 (when ep
-			   (= ep (chess-next-index target (if color
-							      chess-direction-south
-							    chess-direction-north))))))
-	      (chess-pos-set-piece position
-				   (setq en-passant-square
-					 (chess-incr-index target
-							   (if color 1 -1)
-							   0))
-				   ? ))
+
+            (if (and ep
+                       (= piece (if color ?P ?p))
+                       (= ep (chess-next-index target 
+                                               (if color
+                                                   chess-direction-south
+                                                 chess-direction-north)))
+                       ;; need to check pawns are different colors
+                       ;; because of pre-move
+                       (not (eq color color-ep)))
+              (chess-pos-set-piece position
+                                   (setq en-passant-square
+                                         (chess-incr-index target
+                                                           (if color 1 -1)
+                                                           0))
+                                   ? ))
 	    ;; find the king (only once if the king isn't moving)
 	    (if (or (null king-pos)
 		    (memq piece '(?K ?k)))
@@ -1102,6 +1110,7 @@ in check)."
 	    ;; can anybody from the opposite side reach him?  if so,
 	    ;; drop the candidate
 	    (if (and king-pos
+                     (not is-pre-move)
 		     (catch 'in-check
 		       (chess-search-position position king-pos
 					      (not color) t)))
