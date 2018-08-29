@@ -108,6 +108,11 @@ chess-test:
 	echo "$(EMACS) -batch -L $(srcdir) -l chess-test.el -f chess-test '$(DATABASE)' $(START) $(COUNT); rm -f $(top_builddir)/chess-test" > $@
 	chmod u+x $@
 
+.PHONY: test
+test: $(TESTS) $(ELCFILES)
+	$(top_builddir)/chess-test
+	cask exec ecukes
+
 test/twic.pgn:
 	(set -e; f=$$(pwd)/$@; tmp_dir=`mktemp -d`; \
 	 cd $$tmp_dir; \

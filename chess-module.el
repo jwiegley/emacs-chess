@@ -91,7 +91,7 @@
 	(chess-module-detach-game nil))
     (setq chess-module-game game)
     (chess-game-add-hook game 'chess-module-event-handler
-			 (or module (current-buffer)))))
+                         (or module (current-buffer)))))
 
 (defsubst chess-module-leader-p (module)
   (chess-with-current-buffer module
