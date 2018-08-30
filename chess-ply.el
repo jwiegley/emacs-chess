@@ -209,7 +209,7 @@ maneuver."
       ;; validate that `changes' can be legally applied to the given
       ;; position
       (when (or valid-p
-		(chess-legal-plies position :any :index (car changes)
+		(chess-legal-plies position :index (car changes)
 				   :target (cadr changes)))
 	(unless chess-ply-checking-mate
 	  (setq piece (chess-pos-piece position (car changes)))
@@ -445,16 +445,20 @@ position object passed in."
 							   candidate)))
 		  (if changes
 		      (if chess-ply-throw-if-any
-			  (throw 'any-found t)
-			(push (cons position changes) plies)))))
+                          (throw 'any-found t)
+                        (if (or (not specific-target)
+                                (= specific-target (cadr changes)))
+                            (push (cons position changes) plies))))))
 
 	    (if (chess-pos-can-castle position (if color ?Q ?q))
 		(let ((changes (chess-ply-castling-changes position t
 							   candidate)))
 		  (if changes
 		      (if chess-ply-throw-if-any
-			  (throw 'any-found t)
-			(push (cons position changes) plies)))))))
+                          (throw 'any-found t)
+                        (if (or (not specific-target)
+                                (= specific-target (cadr changes)))
+                            (push (cons position changes) plies))))))))
 
 	 ;; the knight is a zesty little piece; there may be more than
 	 ;; one, but at only one possible square in each direction

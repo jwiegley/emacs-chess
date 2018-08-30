@@ -136,7 +136,7 @@ If conversion fails, this function fired an 'illegal event."
      ((eq event 'match)
       (if (chess-game-data game 'active)
 	  (chess-engine-command nil 'busy)
-	(let ((name (and (> (length (car args)) 0) (car args))))
+	(let ((name (> (length (car args)) 0)))
 	  (if (y-or-n-p (if name
 			    (chess-string 'want-to-play (car args))
 			  (chess-string 'want-to-play-a)))
@@ -291,9 +291,10 @@ If conversion fails, this function fired an 'illegal event."
 	  (chess-game-run-hooks game 'flag-fell))))
 
      ((eq event 'flag-fell)
-      (chess-message 'opp-flag-fell)
-      (chess-game-end game :flag-fell)
-      (chess-game-set-data game 'active nil))
+      (let ((chess-engine-handling-event t))
+        (chess-message 'opp-flag-fell)
+        (chess-game-end game :flag-fell)
+        (chess-game-set-data game 'active nil)))
 
      ((eq event 'kibitz)
       (let ((chess-engine-handling-event t))
