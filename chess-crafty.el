@@ -35,6 +35,11 @@
   :type 'file
   :group 'chess-crafty)
 
+(defcustom chess-crafty-args "bookpath=$HOME/.crafty logpath=$HOME/.crafty tbpath=$HOME/.crafty"
+  "Command line arguments to crafty executable"
+  :type 'string
+  :group 'chess-crafty)
+
 (defvar chess-crafty-evaluation nil)
 
 (make-variable-buffer-local 'chess-crafty-evaluation)

@@ -376,7 +376,7 @@ standard position).  In those cases, this variable should be set to nil.")
 	  (lambda ()
 	    (funcall #'chess-engine-default-handler 'undo
 		     (string-to-number (match-string 1))))))
-   (cons "The game has been aborted on move [^.]+\\."
+   (cons "\\S-+ has aborted the game on move [^.]+\\."
 	 (function
 	  (lambda ()
 	    (let ((chess-engine-pending-offer 'abort))
@@ -386,7 +386,7 @@ standard position).  In those cases, this variable should be set to nil.")
 	  (lambda ()
 	    (funcall #'chess-engine-default-handler 'accept))))
    (cons ;; resign announcement
-    "{Game \\([0-9]+\\) (\\(\\S-+\\) vs\\. \\(\\S-+\\)) \\(\\S-+\\) resigns}"
+    "{Game \\([0-9]+\\) (\\(\\S-+\\) vs\\. \\(\\S-+\\)) \\(\\S-+\\) \\(resigns\\|forfeits by disconnection\\)}"
     (function
      (lambda ()
        (let ((chess-engine-handling-event t)
@@ -403,9 +403,10 @@ standard position).  In those cases, this variable should be set to nil.")
    (cons "\\(\\S-+\\) forfeits on time}"
 	 (function
 	  (lambda ()
-	    (if (string= (match-string 1) chess-engine-opponent-name)
-		(funcall #'chess-engine-default-handler 'flag-fell)
-	      (funcall #'chess-engine-default-handler 'call-flag t)))))
+            (let ((opponent-p (not (string= chess-ics-handle (match-string 1)))))
+              (if opponent-p
+                  (funcall #'chess-engine-default-handler 'flag-fell)
+                (funcall #'chess-engine-default-handler 'call-flag t))))))
    (cons "Illegal move (\\([^)]+\\))\\."
 	 (function
 	  (lambda ()

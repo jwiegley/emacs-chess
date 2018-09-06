@@ -130,21 +130,23 @@ If conversion fails, this function fired an 'illegal event."
 
      ((eq event 'pass)
       (when (chess-game-data game 'active)
-	(chess-message 'move-passed)
+	(let ((chess-engine-handling-event t))
+	  (chess-engine-set-position nil (car args) t))
 	t))
 
      ((eq event 'match)
       (if (chess-game-data game 'active)
 	  (chess-engine-command nil 'busy)
 	(let ((name (> (length (car args)) 0)))
-	  (if (y-or-n-p (if name
-			    (chess-string 'want-to-play (car args))
-			  (chess-string 'want-to-play-a)))
+	  (if (or noninteractive
+                  (y-or-n-p (if name
+                                (chess-string 'want-to-play (car args))
+                              (chess-string 'want-to-play-a))))
 	      (progn
-		(setq chess-engine-opponent-name (or name "Anonymous"))
+		(setq chess-engine-opponent-name (if name (car args) "Anonymous"))
 		(let ((chess-engine-handling-event t))
 		  (chess-engine-set-position nil))
-		(chess-engine-command nil 'accept name))
+		(chess-engine-command nil 'accept chess-full-name))
 	    (chess-engine-command nil 'decline))))
       t)
 
@@ -213,12 +215,11 @@ If conversion fails, this function fired an 'illegal event."
       (when chess-engine-pending-offer
 	(if (eq chess-engine-pending-offer 'match)
 	    (unless (chess-game-data game 'active)
-	      (let ((name (and (> (length (car args)) 0)
-			       (car args))))
+	      (let ((name (> (length (car args)) 0)))
 		(if name
-		    (chess-message 'opp-ready (car args))
+                    (chess-message 'opp-ready (car args))
 		  (chess-message 'opp-ready-a))
-		(setq chess-engine-opponent-name (or name "Anonymous"))
+		(setq chess-engine-opponent-name (if name (car args) "Anonymous"))
 		(let ((chess-engine-handling-event t))
 		  (chess-engine-set-position nil))))
 	  (let ((chess-engine-handling-event t))
