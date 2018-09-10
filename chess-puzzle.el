@@ -74,7 +74,7 @@ it.  Useful if you have all of your puzzles in a single file."
     (end-of-puzzles . "There are no more puzzles in this collection")))
 
 ;;;###autoload
-(defun chess-puzzle-set-defualt-file (file)
+(defun chess-puzzle-set-default-file (file)
   "Set the default puzzle file to FILE for the current session.
 
 Useful mostly if you use `chess-puzzle-autoload-file'."
