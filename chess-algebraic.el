@@ -65,7 +65,9 @@
 		      (group (optional (char "a-h")) (optional (char "1-8")))
 		      (optional (group (char ?- ?x)))
 		      (group (char "a-h") (char "1-8"))
-		      (optional (group ?= (group (char ?N ?B ?R ?Q ?K)))))))
+		      (optional
+		       (group (optional ?=)
+			      (group (char ?N ?B ?R ?Q ?n ?b ?r ?q)))))))
       (optional (group (char ?+ ?#))))
   "A regular expression that matches all possible algebraic moves.
 This regexp handles both long and short form.")
@@ -136,7 +138,7 @@ This regexp handles both long and short form.")
 			     (list which target))))
 		     (chess-error 'no-candidates move))))))
 	    (when promotion
-	      (nconc changes (list :promote (aref promotion 0))))))
+	      (nconc changes (list :promote (upcase (aref promotion 0)))))))
 
 	(when changes
 	  (if (and trust mate)
