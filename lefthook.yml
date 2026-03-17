@@ -1,0 +1,39 @@
+pre-commit:
+  parallel: true
+  commands:
+    byte-compile:
+      glob: "*.el"
+      exclude: "features/**"
+      run: >
+        emacs -batch -L .
+        --eval '(setq byte-compile-error-on-warn t)'
+        -f batch-byte-compile {staged_files}
+    format-check:
+      glob: "*.el"
+      run: >
+        emacs -batch -L .
+        -l scripts/check-indent.el
+        -f chess-check-indent-batch {staged_files}
+    lint:
+      glob: "*.el"
+      run: >
+        emacs -batch -L .
+        --eval '(require (quote package-lint))'
+        -f package-lint-batch-and-exit chess.el
+    test:
+      glob: "*.el"
+      run: >
+        emacs -batch -L .
+        -l chess-perft.el
+        --eval '(ert-run-tests-batch-and-exit "depth[123]")'
+    perft-benchmark:
+      glob: "*.el"
+      run: >
+        emacs -batch -L .
+        -l chess-perft.el
+        --eval '(let ((start (float-time)))
+                  (ert-run-tests-batch "depth[123]")
+                  (message "PERFT_TOTAL_TIME=%.2f" (- (float-time) start)))'
+    nix-check:
+      glob: "*.{el,nix}"
+      run: nix flake check --no-warn-dirty 2>&1
