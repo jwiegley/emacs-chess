@@ -1,4 +1,4 @@
-;;; chess-eco.el --- Chess opening classification
+;;; chess-eco.el --- Chess opening classification  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2004, 2014  Free Software Foundation, Inc.
 
@@ -93,7 +93,7 @@
       found)))
 
 (chess-message-catalog 'english
-  '((announce-opening . "%s (ECO code %s)")))
+		       '((announce-opening . "%s (ECO code %s)")))
 
 (defun chess-eco-handler (game event &rest _args)
   "Handle for the `chess-eco' module.
@@ -126,10 +126,10 @@ well known chess opening position."
 			   (if (string-match
 				(concat
 				 "\\(" chess-algebraic-regexp "\\)")
-				     move)
-				    (match-string 1 move)
-				  move))
-			      (split-string (match-string 4) "[\n ]+") " ")))))
+				move)
+			       (match-string 1 move)
+			     move))
+			 (split-string (match-string 4) "[\n ]+") " ")))))
     (cdr result)))
 
 (provide 'chess-eco)

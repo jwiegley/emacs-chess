@@ -1,4 +1,4 @@
-;;; chess-announce.el --- Scheme to verbally announce chess moves
+;;; chess-announce.el --- Scheme to verbally announce chess moves  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
@@ -25,21 +25,21 @@
 (require 'chess-message)
 
 (chess-message-catalog 'english
-  '((queen	  . "queen")
-    (king	  . "king")
-    (bishop	  . "bishop")
-    (knight	  . "knight")
-    (rook	  . "rook")
-    (pawn	  . "pawn")
-    (short-castle . "short castle")
-    (long-castle  . "long castle")
-    (check	  . "check")
-    (checkmate	  . "checkmate")
-    (stalemate	  . "stalemate")
-    (en-passant	  . "on possont")
-    (promote	  . "promote to %s")
-    (piece-moves  . "%s to %s")
-    (piece-takes  . "%s takes %s at %s")))
+		       '((queen	  . "queen")
+			 (king	  . "king")
+			 (bishop	  . "bishop")
+			 (knight	  . "knight")
+			 (rook	  . "rook")
+			 (pawn	  . "pawn")
+			 (short-castle . "short castle")
+			 (long-castle  . "long castle")
+			 (check	  . "check")
+			 (checkmate	  . "checkmate")
+			 (stalemate	  . "stalemate")
+			 (en-passant	  . "on possont")
+			 (promote	  . "promote to %s")
+			 (piece-moves  . "%s to %s")
+			 (piece-takes  . "%s takes %s at %s")))
 
 (defvar chess-announce-names
   '((?q . queen)

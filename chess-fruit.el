@@ -1,4 +1,4 @@
-;;; chess-fruit.el --- Play against fruit!
+;;; chess-fruit.el --- Play against fruit!  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014  Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-;;; chess-random.el --- Generate Fischer Random style positions
+;;; chess-random.el --- Generate Fischer Random style positions  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-;;; chess-ply.el --- Routines for manipulating chess plies
+;;; chess-ply.el --- Routines for manipulating chess plies  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2008, 2014  Free Software Foundation, Inc.
 
@@ -169,7 +169,7 @@
 		(if long :long-castle :castle))))))
 
 (chess-message-catalog 'english
-  '((ambiguous-promotion . "Promotion without :promote keyword")))
+		       '((ambiguous-promotion . "Promotion without :promote keyword")))
 
 (defvar chess-ply-checking-mate nil)
 
@@ -204,86 +204,86 @@ maneuver."
   (cl-assert (vectorp position))
   (let ((ply (cons position changes)))
     (if (integerp (car changes))
-      (let* ((color (< (chess-pos-piece position (car changes)) ?a))
-             (is-pre-move (not (eq color (chess-pos-side-to-move position))))
-             piece)
-        ;; validate that `changes' can be legally applied to the given
-        ;; position
-        (if (or valid-p
-                (chess-legal-plies position :index (car changes)
-                                   :target (cadr changes)))
-          (unless chess-ply-checking-mate
-            (setq piece (chess-pos-piece position (car changes)))
-            ;; is this a castling maneuver?
-            (if (and (= piece (if color ?K ?k))
-                     (not (or (memq :castle changes)
-                              (memq :long-castle changes))))
-                (let* ((target (cadr changes))
-                       (file (chess-index-file target))
-                       (long (= 2 file))
-                       new-changes)
-                  (if (and (or (and (= file 6)
-                                    (chess-pos-can-castle position
-                                                          (if color ?K ?k)))
-                               (and long
-                                    (chess-pos-can-castle position
-                                                          (if color ?Q ?q))))
-                           (setq new-changes
-                                 (chess-ply-castling-changes position long
-                                                             (car changes))))
-                      (setcdr ply new-changes)))
+	(let* ((color (< (chess-pos-piece position (car changes)) ?a))
+               (is-pre-move (not (eq color (chess-pos-side-to-move position))))
+               piece)
+          ;; validate that `changes' can be legally applied to the given
+          ;; position
+          (if (or valid-p
+                  (chess-legal-plies position :index (car changes)
+                                     :target (cadr changes)))
+              (unless chess-ply-checking-mate
+		(setq piece (chess-pos-piece position (car changes)))
+		;; is this a castling maneuver?
+		(if (and (= piece (if color ?K ?k))
+			 (not (or (memq :castle changes)
+				  (memq :long-castle changes))))
+                    (let* ((target (cadr changes))
+			   (file (chess-index-file target))
+			   (long (= 2 file))
+			   new-changes)
+                      (if (and (or (and (= file 6)
+					(chess-pos-can-castle position
+                                                              (if color ?K ?k)))
+				   (and long
+					(chess-pos-can-castle position
+                                                              (if color ?Q ?q))))
+                               (setq new-changes
+                                     (chess-ply-castling-changes position long
+								 (car changes))))
+			  (setcdr ply new-changes)))
 
-              (when (eq piece (if color ?P ?p))
-                ;; is this a pawn move to the ultimate rank?  if so, check
-                ;; that the :promote keyword is present.
-                (when (and (not (memq :promote changes))
-                           (= (if color 0 7)
-                              (chess-index-rank (cadr changes))))
-                  (let ((promo (if is-pre-move (nth (if color 1 0) (car promotion-options))
-                                 (ask-promotion color))))
-                    (nconc changes (list :promote promo))
-                    (setq ply (cons position changes))))
+		  (when (eq piece (if color ?P ?p))
+                    ;; is this a pawn move to the ultimate rank?  if so, check
+                    ;; that the :promote keyword is present.
+                    (when (and (not (memq :promote changes))
+                               (= (if color 0 7)
+				  (chess-index-rank (cadr changes))))
+                      (let ((promo (if is-pre-move (nth (if color 1 0) (car promotion-options))
+                                     (ask-promotion color))))
+			(nconc changes (list :promote promo))
+			(setq ply (cons position changes))))
 
-                ;; is this an en-passant capture?
-                (when (let ((ep (chess-pos-en-passant position)))
-                        (when ep
-                          (eq ep (funcall (if color #'+ #'-) (cadr changes) 8))))
-                  (nconc changes (list :en-passant)))))
+                    ;; is this an en-passant capture?
+                    (when (let ((ep (chess-pos-en-passant position)))
+                            (when ep
+                              (eq ep (funcall (if color #'+ #'-) (cadr changes) 8))))
+                      (nconc changes (list :en-passant)))))
 
-            ;; we must determine whether this ply results in a check,
-            ;; checkmate or stalemate
-            (unless (or chess-pos-always-white
-                        (memq :check changes)
-                        (memq :checkmate changes)
-                        (memq :stalemate changes))
-              (let* ((chess-ply-checking-mate t)
-                     ;; jww (2002-04-17): this is a memory waste?
-                     (next-pos (chess-ply-next-pos ply))
-                     (next-color (not color))
-                     (king (chess-pos-king-index next-pos next-color))
-                     (in-check (catch 'in-check
-                                 (chess-search-position next-pos king color t t))))
-                ;; first, see if the moves leaves the king in check.
-                ;; This is tested by seeing if any of the opponent's
-                ;; pieces can reach the king in the position that will
-                ;; result from this ply.  If the king is in check, we
-                ;; will then test for checkmate by seeing if any of his
-                ;; subjects can move or not.  That test will also
-                ;; confirm stalemate for us.
-                (if (or in-check
-                        (null (chess-legal-plies next-pos :any :index king)))
-                    ;; is the opponent's king in check/mate or stalemate
-                    ;; now, as a result of the changes?
-                    (if (chess-legal-plies next-pos :any :color next-color)
-                        (if in-check
-                            (nconc changes (list (chess-pos-set-status
-                                                  next-pos :check))))
-                      (nconc changes (list (chess-pos-set-status
-                                            next-pos
-                                            (if in-check
-                                                :checkmate
-                                              :stalemate)))))))))
-	(setq ply nil))))
+		;; we must determine whether this ply results in a check,
+		;; checkmate or stalemate
+		(unless (or chess-pos-always-white
+                            (memq :check changes)
+                            (memq :checkmate changes)
+                            (memq :stalemate changes))
+		  (let* ((chess-ply-checking-mate t)
+			 ;; jww (2002-04-17): this is a memory waste?
+			 (next-pos (chess-ply-next-pos ply))
+			 (next-color (not color))
+			 (king (chess-pos-king-index next-pos next-color))
+			 (in-check (catch 'in-check
+                                     (chess-search-position next-pos king color t t))))
+                    ;; first, see if the moves leaves the king in check.
+                    ;; This is tested by seeing if any of the opponent's
+                    ;; pieces can reach the king in the position that will
+                    ;; result from this ply.  If the king is in check, we
+                    ;; will then test for checkmate by seeing if any of his
+                    ;; subjects can move or not.  That test will also
+                    ;; confirm stalemate for us.
+                    (if (or in-check
+                            (null (chess-legal-plies next-pos :any :index king)))
+			;; is the opponent's king in check/mate or stalemate
+			;; now, as a result of the changes?
+			(if (chess-legal-plies next-pos :any :color next-color)
+                            (if in-check
+				(nconc changes (list (chess-pos-set-status
+                                                      next-pos :check))))
+			  (nconc changes (list (chess-pos-set-status
+						next-pos
+						(if in-check
+                                                    :checkmate
+						  :stalemate)))))))))
+	    (setq ply nil))))
     ;; return the annotated ply
     ply))
 
@@ -299,23 +299,23 @@ maneuver."
 (defmacro chess-ply--add (rank-adj file-adj &optional pos)
   "This is totally a shortcut."
   `(let ((target (or ,pos (chess-incr-index candidate ,rank-adj ,file-adj))))
-    (if (and (or (not specific-target)
-		 (= target specific-target))
-	     (chess-pos-legal-candidates position color target
-					 (list candidate)))
-	(if chess-ply-throw-if-any
-	    (throw 'any-found t)
-	  (let ((promotion (and (chess-pos-piece-p position candidate
-						   (if color ?P ?p))
-				(= (chess-index-rank target)
-				   (if color 0 7)))))
-	    (if promotion
-		(dolist (promote '(?Q ?R ?B ?N))
-		  (let ((ply (chess-ply-create position t candidate target
-					       :promote promote)))
-		    (when ply (push ply plies))))
-	      (let ((ply (chess-ply-create position t candidate target)))
-		(when ply (push ply plies)))))))))
+     (if (and (or (not specific-target)
+		  (= target specific-target))
+	      (chess-pos-legal-candidates position color target
+					  (list candidate)))
+	 (if chess-ply-throw-if-any
+	     (throw 'any-found t)
+	   (let ((promotion (and (chess-pos-piece-p position candidate
+						    (if color ?P ?p))
+				 (= (chess-index-rank target)
+				    (if color 0 7)))))
+	     (if promotion
+		 (dolist (promote '(?Q ?R ?B ?N))
+		   (let ((ply (chess-ply-create position t candidate target
+						:promote promote)))
+		     (when ply (push ply plies))))
+	       (let ((ply (chess-ply-create position t candidate target)))
+		 (when ply (push ply plies)))))))))
 
 (defun chess-legal-plies (position &rest keywords)
   "Return a list of all legal plies in POSITION.
@@ -395,7 +395,7 @@ position object passed in."
 						      chess-direction-south)))
 		 (2ahead (when ahead (chess-next-index ahead (if color
 								 chess-direction-north
-							chess-direction-south)))))
+							       chess-direction-south)))))
 	    (when (chess-pos-piece-p position ahead ? )
 	      (chess-ply--add nil nil ahead)
 	      (if (and (= (if color 6 1) (chess-index-rank candidate))

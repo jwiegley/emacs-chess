@@ -1,4 +1,4 @@
-;;; chess-plain.el --- Plain ASCII chess display
+;;; chess-plain.el --- Plain ASCII chess display  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002-2005, 2014  Free Software Foundation, Inc.
 
@@ -189,9 +189,9 @@ of `chess-plain-upcase-indicates'."
 
 (defcustom chess-plain-upcase-indicates 'color
   "Defines what a upcase char should indicate.
-The default is 'color, meaning a upcase char is a white piece, a
-lowercase char a black piece.  Possible values: 'color (default),
-'square-color.  If set to 'square-color, a uppercase character
+The default is \\='color, meaning a upcase char is a white piece, a
+lowercase char a black piece.  Possible values: \\='color (default),
+\\='square-color.  If set to \\='square-color, a uppercase character
 indicates a piece on a black square. (Note that you also need to
 modify `chess-plain-piece-chars' to avoid real confusion.)"
   :group 'chess-plain

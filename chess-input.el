@@ -1,4 +1,4 @@
-;;; chess-input.el --- Keyboard entry of algebraic notation, using shortcut notation
+;;; chess-input.el --- Keyboard entry of algebraic notation, using shortcut notation  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2005, 2014 Free Software Foundation, Inc.
 

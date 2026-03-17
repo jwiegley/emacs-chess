@@ -1,4 +1,4 @@
-;;; chess-phalanx.el --- Play chess against phalanx!
+;;; chess-phalanx.el --- Play chess against phalanx!  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 

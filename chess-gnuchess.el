@@ -1,4 +1,4 @@
-;;; chess-gnuchess.el --- Play against gnuchess!
+;;; chess-gnuchess.el --- Play against gnuchess!  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
@@ -70,14 +70,14 @@
 
      ((eq event 'setup-pos)
       (let ((file (chess-with-temp-file
-		      (insert (chess-pos-to-fen (car args)) ?\n))))
+		   (insert (chess-pos-to-fen (car args)) ?\n))))
 	(chess-engine-send nil (format "epdload %s\n" file))))
 
      ((eq event 'setup-game)
       (if (zerop (chess-game-index (car args)))
 	  (chess-gnuchess-handler game 'setup-pos (chess-game-pos game 0))
 	(let ((file (chess-with-temp-file
-			(insert (chess-game-to-string (car args)) ?\n))))
+		     (insert (chess-game-to-string (car args)) ?\n))))
 	  (chess-engine-send nil (format "pgnload %s\n" file)))))
 
      ((eq event 'pass)

@@ -1,4 +1,4 @@
-;;; chess-crafty.el --- Play against crafty!
+;;; chess-crafty.el --- Play against crafty!  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2014  Free Software Foundation, Inc.
 
@@ -72,9 +72,9 @@
    (cons (concat "\t ?\\([0-9]+\\)\\s-+"
 		 "\\(-?[0-9]+\\)\\s-+\\([0-9]+\\)\\s-+\\([0-9]+\\)\\s-+"
 		 "\\(" ;; The list of moves
-		   "\\( *[1-9][0-9]*\\. "
-		     "\\(\\.\\.\\.\\|" chess-algebraic-regexp "\\)"
-		     "\\( " chess-algebraic-regexp "\\)?\\)+\\)$")
+		 "\\( *[1-9][0-9]*\\. "
+		 "\\(\\.\\.\\.\\|" chess-algebraic-regexp "\\)"
+		 "\\( " chess-algebraic-regexp "\\)?\\)+\\)$")
 	 (function
 	  (lambda ()
 	    (when chess-crafty-analyzing-p
@@ -154,7 +154,7 @@
 
      ((eq event 'setup-game)
       (let ((file (chess-with-temp-file
-		      (insert (chess-game-to-string (car args)) ?\n))))
+		   (insert (chess-game-to-string (car args)) ?\n))))
 	(chess-engine-send nil (format "read %s\n" file))))
 
      ((eq event 'set-option)

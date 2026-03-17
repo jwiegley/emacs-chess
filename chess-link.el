@@ -1,4 +1,4 @@
-;;; chess-link.el --- Connect two engines
+;;; chess-link.el --- Connect two engines  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 

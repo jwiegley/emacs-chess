@@ -41,3 +41,10 @@
 game.*
 log.*
 /test.out
+/result
+/result-*
+/coverage
+/benchmark
+/docs
+/coverage.lcov
+/perft-timing.txt

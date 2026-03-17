@@ -1,3 +1,5 @@
+;;; env.el --- Ecukes test environment  -*- lexical-binding: t; -*-
+
 (require 'f)
 
 (defvar emacs-chess-support-path
@@ -39,7 +41,7 @@
                        '(chess-display-popup nil)
                        '(chess-display-allow-pre-moves t)
                        '(chess-images-separate-frame nil))
-)
+ )
 
 (Before
  ;; Before each scenario is run
@@ -57,7 +59,7 @@
        (buf2 (get-buffer "*Chessboard*<2>")))
    (if buf (kill-buffer buf))
    (if buf2 (kill-buffer buf2)))
-)
+ )
 
 (Teardown
  ;; After when everything has been run

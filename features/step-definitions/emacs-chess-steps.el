@@ -1,6 +1,10 @@
+;;; emacs-chess-steps.el --- Chess step definitions  -*- lexical-binding: t; -*-
+
 ;; This file contains your project specific step definitions. All
 ;; files in this directory whose names end with "-steps.el" will be
 ;; loaded automatically by Ecukes.
+
+(defvar test-fifo)
 
 (Given "^ics session$"
        (lambda ()
@@ -12,7 +16,7 @@
            (sleep-for 2)
            (chess-ics "nowhere.org" 5000 nil nil "sh" "-c" (format "cat %s" test-fn))
            
-       )))
+	   )))
 
 (When "^new game$"
       (lambda ()
@@ -23,7 +27,7 @@
         (sleep-for 2)
         )
       )
-        
+
 (When "^opponent forfeits on time$"
       (lambda ()
         (process-send-string test-fifo (format "{Game 42 (GuestYOU vs. GuestME) GuestYOU forfeits on time} 0-1\n"))
@@ -59,17 +63,17 @@
 (When "^I set position of \"\\(.+\\)\" to fen \"\\(.+\\)\"$"
       (lambda (process-name fen)
         (chess-with-current-buffer (process-buffer (get-process process-name))
-          (chess-engine-set-position nil (chess-fen-to-pos fen)))
+				   (chess-engine-set-position nil (chess-fen-to-pos fen)))
         (sleep-for 2)
-))
+	))
 
 
 (When "^I send position from \"\\(.+\\)\"$"
       (lambda (process-name)
         (chess-with-current-buffer (process-buffer (get-process process-name))
-          (chess-game-run-hooks chess-module-game 'setup-pos (chess-game-pos chess-module-game)))
+				   (chess-game-run-hooks chess-module-game 'setup-pos (chess-game-pos chess-module-game)))
         (sleep-for 2)
-))
+	))
 
 
 (Then "^the move \"\\([a-h][1-8]\\)-\\([a-h][1-8]\\)\" is illegal$"
@@ -91,7 +95,7 @@
           (Given "I switch to buffer \"*Chessboard*<2>\""))
         (When "I type \"%s\"" move)
         (sleep-for 1)
-))
+	))
 
 (When "^\\(white\\|black\\) selects \"\\([a-h][1-8]\\)\"$"
       (lambda (color source)
@@ -101,7 +105,7 @@
         (When "I go to point \"%s\"" (number-to-string (chess-display-index-pos nil (chess-coord-to-index source))))
         (When "I press \"RET\"")
         (sleep-for 1)
-))
+	))
 
 (Then "^paint-move last \\([0-9]+\\) plies less than \\([0-9]+\\) microseconds"
       (lambda (times micros)
@@ -145,7 +149,7 @@
          (And "I specify a good port")
          (And "I press \"RET\"")
          (And "I execute the action chain")
-))
+	 ))
 
 (Then "^the square at \"\\([a-h][1-8]\\)\" is highlighted \\(.+\\)$"
       (lambda (source kind)
@@ -170,7 +174,7 @@
           (assert (eq (get-text-property 
                        (chess-display-index-pos nil (chess-coord-to-index source))
                        'face) (cond ((string= kind "selected") 'chess-ics1-highlight-face)
-                                    (t 'chess-display-highlight)))))))
+                       (t 'chess-display-highlight)))))))
 
 (Then "^the square at \"\\([a-h][1-8]\\)\" is unhighlighted$"
       (lambda (source)

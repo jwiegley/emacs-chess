@@ -1,12 +1,13 @@
-;;; chess.el --- Play chess in GNU Emacs
+;;; chess.el --- Play chess  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2001, 2014 Free Software Foundation, Inc.
 
 ;; Author: John Wiegley <johnw@gnu.org>
 ;; Maintainer: Mario Lang <mlang@delysid.org>
 ;; Version: 2.0.1
-;; Package-Requires: ((cl-lib "0.5"))
+;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: games
+;; URL: https://github.com/jwiegley/emacs-chess
 ;; Compatibility: Emacs24
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -176,8 +177,8 @@ If an element of MODULE-LIST is a sublist, treat it as alternatives."
     (nreverse objects)))
 
 (chess-message-catalog 'english
-  '((no-engines-found
-     . "Could not find any chess engines to play against; install gnuchess!")))
+		       '((no-engines-found
+			  . "Could not find any chess engines to play against; install gnuchess!")))
 
 ;;;###autoload
 (defun chess (&optional engine disable-popup engine-response-handler
@@ -217,12 +218,12 @@ Otherwise use `chess-default-engine' to determine the engine."
 
     (push (unless (eq engine 'none)
 	    (car ;(condition-case nil
-		     (chess-create-modules (list (or engine chess-default-engine))
-					   'chess--create-engine game
-					   engine-response-handler
-					   engine-ctor-args)
-		   ;  (error nil))
-	    ))
+	     (chess-create-modules (list (or engine chess-default-engine))
+				   'chess--create-engine game
+				   engine-response-handler
+				   engine-ctor-args)
+					;  (error nil))
+	     ))
 	  objects)
 
     (unless (car objects)

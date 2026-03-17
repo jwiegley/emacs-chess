@@ -1,4 +1,4 @@
-;;; chess-images.el --- Chessboard display style using graphical images
+;;; chess-images.el --- Chessboard display style using graphical images  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2005, 2008, 2014  Free Software Foundation, Inc.
 
@@ -35,6 +35,9 @@
 ;;; Code:
 
 (require 'chess-display)
+
+(declare-function x-display-pixel-height "xfns.c" (&optional terminal))
+(declare-function x-display-pixel-width "xfns.c" (&optional terminal))
 
 (defgroup chess-images nil
   "Module for drawing a chess-display using graphical images."
@@ -177,7 +180,7 @@ called."
   "The names and index values of the different pieces.")
 
 (chess-message-catalog 'english
-  '((no-images-fallback . "Could not find any suitable or properly sized chess images")))
+		       '((no-images-fallback . "Could not find any suitable or properly sized chess images")))
 
 (defun chess-images-handler (event &rest args)
   (cond
@@ -231,7 +234,7 @@ called."
   (chess-images-determine-size))
 
 (chess-message-catalog 'english
-  '((no-images . "Cannot find any piece images; check `chess-images-directory'")))
+		       '((no-images . "Cannot find any piece images; check `chess-images-directory'")))
 
 (defun chess-images-popup ()
   (unless chess-images-size
@@ -333,8 +336,8 @@ is often an arbitrary color or
     (put-text-property pos (1+ pos) 'display highlight)))
 
 (chess-message-catalog 'english
-  '((redrawing-frame . "Redrawing chess display with different size...")
-    (redrawing-frame-done . "Redrawing chess display with different size...done")))
+		       '((redrawing-frame . "Redrawing chess display with different size...")
+			 (redrawing-frame-done . "Redrawing chess display with different size...done")))
 
 (defun chess-images-change-size (size)
   (let* ((buffer (current-buffer))
@@ -432,7 +435,7 @@ They are returned in ascending order, or nil for no sizes available."
     (insert "\"  c red s void\",\n")
     (insert "\". c red s background\",\n")
     (insert "/* pixels */\n")
-    (dotimes (i height)
+    (dotimes (_ height)
       (insert ?\" (make-string (or width height) ?.) ?\" ?, ?\n))
     (delete-char -2)
     (insert "\n};\n")
@@ -468,9 +471,9 @@ This is necessary for bizzare Emacs reasons."
 	  (forward-line (1+ colors))
 	  (while (looking-at "/\\*")
 	    (forward-line))
-	  (dotimes (i add-height)
+	  (dotimes (_ add-height)
 	    (insert "\"")
-	    (dotimes (j width)
+	    (dotimes (_ width)
 	      (insert color-char))
 	    (insert "\",\n"))))
     (buffer-string)))
@@ -497,8 +500,8 @@ This is necessary for bizzare Emacs reasons."
 		    :color-symbols syms))))
 
 (chess-message-catalog 'english
-  '((piece-images-loading . "Loading chess piece images...")
-    (piece-images-loaded  . "Loading chess piece images...done")))
+		       '((piece-images-loading . "Loading chess piece images...")
+			 (piece-images-loaded  . "Loading chess piece images...done")))
 
 (defun chess-images-init-cache ()
   "Initialize the display image cache."

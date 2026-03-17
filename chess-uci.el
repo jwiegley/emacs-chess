@@ -1,4 +1,4 @@
-;;; chess-uci.el --- Common functions for the Universal Chess Interface protocol
+;;; chess-uci.el --- Common functions for the Universal Chess Interface protocol  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014  Free Software Foundation, Inc.
 
@@ -60,7 +60,7 @@
 
 (defsubst chess-uci-convert-long-algebraic (move)
   "Convert long algebraic MOVE to a ply in reference to the engine position.
-If conversion fails, this function fired an 'illegal event."
+If conversion fails, this function fired an \\='illegal event."
   (or (chess-uci-long-algebraic-to-ply (chess-engine-position nil) move)
       (chess-engine-command nil 'illegal)))
 
@@ -103,7 +103,7 @@ If conversion fails, this function fired an 'illegal event."
 		 (file-exists-p chess-polyglot-book-file))
 	(unless chess-polyglot-book
 	  (setq chess-polyglot-book (chess-polyglot-book-open
-				chess-polyglot-book-file))))
+				     chess-polyglot-book-file))))
       (apply #'chess-common-handler game event args))
 
      ((eq event 'new)

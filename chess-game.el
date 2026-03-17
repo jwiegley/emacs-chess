@@ -1,4 +1,4 @@
-;;; chess-game.el --- Maintain a chess game that is being played or viewed
+;;; chess-game.el --- Maintain a chess game that is being played or viewed  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2014  Free Software Foundation, Inc.
 
@@ -83,7 +83,7 @@ matches."
     (chess-game-set-hooks game hooks)))
 
 (defun chess-game-get-hook-data (game function)
-  "Get list of corresponding data (nil if none) from all event hooks that match FUNCTION."
+  "Get data from event hooks of GAME matching FUNCTION."
   (cl-assert game)
   (cl-assert function)
   (cl-remove-if 'null (mapcar (lambda (h) (if (eq (car h) function) (cdr h))) (chess-game-hooks game))))
@@ -103,7 +103,7 @@ matches."
 
 (defsubst chess-game-set-tags (game tags)
   "Set the tags alist associated with GAME.
-After the TAGS alist was set the 'set-tags event is triggered."
+After the TAGS alist was set the \\='set-tags event is triggered."
   (cl-assert game)
   (cl-assert (or tags (eq tags nil)))
   (setcar (cdr game) tags)
@@ -238,7 +238,7 @@ If INDEX is nil, the last played ply is returned."
 (defun chess-game-add-ply (game ply)
   "Return the position related to GAME's INDEX position."
   (cl-assert game)
-  (cl-check-type ply listp)
+  (cl-check-type ply list)
   (let ((plies (chess-game-plies game)))
     (if plies
 	(nconc plies (list ply))
@@ -246,8 +246,8 @@ If INDEX is nil, the last played ply is returned."
 	(chess-game-set-plies game (list ply))))))
 
 (chess-message-catalog 'english
-  '((undo-limit-reached . "Cannot undo further")
-    (add-to-completed	. "Cannot add moves to a completed game")))
+		       '((undo-limit-reached . "Cannot undo further")
+			 (add-to-completed	. "Cannot add moves to a completed game")))
 
 (defun chess-game-undo (game count)
   "Undo the last COUNT plies of GAME."
@@ -309,16 +309,16 @@ later using the various tag-related methods)."
 (defun chess-game-move (game ply)
   "Make a move in the current GAME using PLY.
 This creates a new position and adds it to the main variation.
-The 'changes' of the last ply reflect whether the game is currently in
+The \\='changes\\=' of the last ply reflect whether the game is currently in
 progress (nil), if it is drawn, resigned, mate, etc."
   (cl-assert game)
   (cl-assert (listp ply))
   (let ((current-ply (chess-game-ply game))
-	(position (chess-ply-pos ply))
 	(changes (chess-ply-changes ply)))
 
     (cl-assert current-ply)
-    (cl-assert (and position (eq position (chess-ply-pos current-ply))))
+    (cl-assert (and (chess-ply-pos ply)
+		    (eq (chess-ply-pos ply) (chess-ply-pos current-ply))))
     (cl-assert changes)
 
     (if (chess-ply-final-p current-ply)

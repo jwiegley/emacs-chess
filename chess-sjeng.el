@@ -1,4 +1,4 @@
-;;; chess-sjeng.el --- Play against sjeng!
+;;; chess-sjeng.el --- Play against sjeng!  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2004  Free Software Foundation, Inc.
 
@@ -94,7 +94,7 @@
 
      ((eq event 'setup-game)
       (let ((file (chess-with-temp-file
-		      (insert (chess-game-to-string (car args)) ?\n))))
+		   (insert (chess-game-to-string (car args)) ?\n))))
 	(chess-engine-send nil (format "read %s\n" file))))
 
      ((eq event 'set-option)

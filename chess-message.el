@@ -1,4 +1,4 @@
-;;; chess-message.el --- Code shared by all chess displays
+;;; chess-message.el --- Code shared by all chess displays  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 

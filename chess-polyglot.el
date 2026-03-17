@@ -69,7 +69,7 @@ polyglot book file.")
   "Read N octets from the current buffer and advance point."
   (let ((val 0))
     (dotimes (_ n (progn (cl-assert (<= val most-positive-fixnum)) val))
-      (setq val (logior (lsh val 8)
+      (setq val (logior (ash val 8)
 			(progn (forward-char 1) (preceding-char)))))))
 
 (defsubst chess-polyglot-read-key ()
@@ -477,9 +477,9 @@ Returns a buffer object which contains the binary data."
 		 (pcase (list (aref (match-string 1) 0)
 			      (aref (match-string 2) 0)
 			      (logior (aref (match-string 3) 0)
-				      (lsh (aref (match-string 4) 0) 8)
-				      (lsh (aref (match-string 5) 0) 16)
-				      (lsh (aref (match-string 6) 0) 24))
+				      (ash (aref (match-string 4) 0) 8)
+				      (ash (aref (match-string 5) 0) 16)
+				      (ash (aref (match-string 6) 0) 24))
 			      (aref (match-string 7) 0)
 			      (aref (match-string 8) 0))
 		   (`(,method ,_ ,modified-epoch ,_ ,from-fs)
@@ -518,16 +518,16 @@ distribute the probability that a move gets picked."
   (cl-flet ((ply-weight (ply)
 	      (round (expt (chess-ply-keyword ply :polyglot-book-weight)
 			   strength))))
-    (let ((plies (chess-polyglot-book-plies book position)))
-      (when plies
-	(let ((random-value (random (cl-reduce #'+ (mapcar #'ply-weight plies))))
-	      (max 0) ply)
-	  (while plies
-	    (if (< random-value (cl-incf max (ply-weight (car plies))))
-		(setq ply (car plies) plies nil)
-	      (setq plies (cdr plies))))
-	  (cl-assert ply)
-	  ply)))))
+	   (let ((plies (chess-polyglot-book-plies book position)))
+	     (when plies
+	       (let ((random-value (random (cl-reduce #'+ (mapcar #'ply-weight plies))))
+		     (max 0) ply)
+		 (while plies
+		   (if (< random-value (cl-incf max (ply-weight (car plies))))
+		       (setq ply (car plies) plies nil)
+		     (setq plies (cdr plies))))
+		 (cl-assert ply)
+		 ply)))))
 
 (defalias 'chess-polyglot-book-close 'kill-buffer
   "Close a polyglot book.")

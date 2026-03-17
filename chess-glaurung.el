@@ -1,4 +1,4 @@
-;;; chess-glaurung.el --- Play against glaurung!
+;;; chess-glaurung.el --- Play against glaurung!  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014  Free Software Foundation, Inc.
 

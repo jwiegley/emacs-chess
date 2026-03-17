@@ -1,4 +1,4 @@
-;;; chess-log.el --- Log chess events, as an aid to debugging
+;;; chess-log.el --- Log chess events, as an aid to debugging  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 

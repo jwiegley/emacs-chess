@@ -1,4 +1,4 @@
-;;; chess-clock.el --- Implements a chess clock
+;;; chess-clock.el --- Implements a chess clock  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2014  Free Software Foundation, Inc.
 
@@ -92,7 +92,7 @@
 
    ((eq event 'destroy)
     (if chess-clock-timer
-      (cancel-timer chess-clock-timer)
+	(cancel-timer chess-clock-timer)
       (setq chess-clock-timer nil)))))
 
 (defvar chess-clock-tick-tocking nil)

@@ -1,4 +1,4 @@
-;;; chess-maint.el --- code to help build chess -*- no-byte-compile: t -*-
+;;; chess-maint.el --- code to help build chess  -*- lexical-binding: t; no-byte-compile: t; -*-
 
 ;; Copyright (C) 2008 Free Software Foundation, Inc.
 

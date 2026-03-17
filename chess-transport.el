@@ -1,4 +1,4 @@
-;;; chess-transport.el --- Example generic transport
+;;; chess-transport.el --- Example generic transport  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 

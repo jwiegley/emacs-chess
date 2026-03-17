@@ -1,4 +1,4 @@
-;;; chess-network.el --- Play against an opponent over the network
+;;; chess-network.el --- Play against an opponent over the network  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2003, 2008  Free Software Foundation, Inc.
 
@@ -34,7 +34,7 @@
    (cons "chess match\\(\\s-+\\(.+\\)\\)?$"
 	 (function
 	  (lambda ()
-    (funcall chess-engine-response-handler 'match
+	    (funcall chess-engine-response-handler 'match
 		     (match-string 2)))))
    (cons "fen\\s-+\\(.+\\)"
 	 (function
@@ -109,9 +109,9 @@
 		     (chess-network-parse-multiline (match-string 1))))))))
 
 (chess-message-catalog 'english
-  '((network-starting  . "Starting network client/server...")
-    (network-waiting   . "Now waiting for your opponent to connect...")
-    (takeback-sent     . "Sent request to undo %d ply(s) to your opponent")))
+		       '((network-starting  . "Starting network client/server...")
+			 (network-waiting   . "Now waiting for your opponent to connect...")
+			 (takeback-sent     . "Sent request to undo %d ply(s) to your opponent")))
 
 (defun chess-network-flatten-multiline (str)
   (while (string-match "\n" str)

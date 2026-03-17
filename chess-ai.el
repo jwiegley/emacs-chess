@@ -1,4 +1,4 @@
-;;; chess-ai.el --- A native Emacs Lisp Chess playing module
+;;; chess-ai.el --- A native Emacs Lisp Chess playing module  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014  Free Software Foundation, Inc.
 
@@ -75,7 +75,7 @@ this ply depth limit has been reached."
 (defcustom chess-ai-rook-value 500
   "Value of a Rook."
   :group 'chess-ai
-  :type 'intger)
+  :type 'integer)
 
 (defcustom chess-ai-queen-value 900
   "Value of a Queen."

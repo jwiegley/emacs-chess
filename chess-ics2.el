@@ -1,6 +1,5 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; chess-ics2.el --- ICS2 style chessboard display  -*- lexical-binding: t; -*-
 ;;
-;; ICS2 style display
 ;; Author: Dmitry "Troydm" Geurkov (dgeurkov@gmail.com)
 
 (require 'chess-display)
@@ -114,7 +113,7 @@
 	(a (% (+ rank file) 2)))
     (add-text-properties 0 1 (list 'face (if (> piece ?a)
 					     (if (= a 0) 'chess-ics2-black-face
-					     'chess-ics2-black-face-alt)
+					       'chess-ics2-black-face-alt)
 					   (if (= a 0) 'chess-ics2-white-face
 					     'chess-ics2-white-face-alt))) p)
     p))
@@ -130,7 +129,7 @@
       (message (concat (int-to-string pos) " " (int-to-string index) " "
                        (char-to-string piece)))
       (if (= (% (+ (/ index 8) pos) 2) 1)
-      (goto-char pos) (goto-char (1- pos)))
+	  (goto-char pos) (goto-char (1- pos)))
       (delete-char 2)
       (insert (chess-ics2-piece-text piece (/ index 8) index))
       (insert (chess-ics2-piece-text ?  (/ index 8) index))
@@ -144,7 +143,7 @@ PERSPECTIVE is t for white or nil for black."
     (erase-buffer)
     (let* ((inverted (not perspective))
 	   (rank (if inverted 7 0))
-	   (file (if inverted 7 0)) beg)
+	   (file (if inverted 7 0)) _beg)
       (insert "\n\n")
       (while (if inverted (>= rank 0) (< rank 8))
 	(while (if inverted (>= file 0) (< file 8))
@@ -169,8 +168,9 @@ PERSPECTIVE is t for white or nil for black."
     (goto-char pos)))
 
 (defun chess-ics2-highlight (index &optional mode)
-  (let ((pos (chess-display-index-pos nil index))
-        (piece (chess-pos-piece (chess-display-position nil) index)))
+  (let* ((pos (chess-display-index-pos nil index))
+         (piece (chess-pos-piece (chess-display-position nil) index))
+         (a (% (+ (/ index 8) (% index 8)) 2)))
     (put-text-property pos (save-excursion
 			     (goto-char (+ pos 2))
 			     (point))

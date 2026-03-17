@@ -1,4 +1,4 @@
-;;; chess-file.el --- Handle chess databases stored in PGN or EPD files
+;;; chess-file.el --- Handle chess databases stored in PGN or EPD files  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2014  Free Software Foundation, Inc.
 
@@ -44,7 +44,7 @@ See `chess-file-types' for details.")
 	 chess-epd-to-game chess-game-to-epd (?\n)))
   "Alist of different file types.
 Entries have the form (TYPE BEGIN-REGEXP TO-GAME FROM-GAME SEPARATOR)
-where TYPE is a symbol (usually either 'pgn or 'epd),
+where TYPE is a symbol (usually either \\='pgn or \\='epd),
 BEGIN-REGEXP is the regexp to use for matching the beginning of new records,
 TO-GAME and FROM-GAME are functions to use for reading and writing a game
 object from/into the buffer and SEPARATOR is a list of characters to insert

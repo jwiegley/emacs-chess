@@ -1,3 +1,4 @@
+;;; _pkg.el --- Chess package description  -*- lexical-binding: t; -*-
 ;;;###autoload
 (if (fboundp 'package-provide)
     (package-provide 'chess

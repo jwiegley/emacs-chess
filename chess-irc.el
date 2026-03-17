@@ -1,4 +1,4 @@
-;;; chess-irc.el --- This transport uses an IRC bot to send/receive moves.
+;;; chess-irc.el --- This transport uses an IRC bot to send/receive moves.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 
@@ -43,11 +43,11 @@
 ;;; Code:
 
 (chess-message-catalog 'english
-  '((opponent-says  . "Your opponent says: %s")
-    (irc-connecting . "Connecting to IRC server '%s:%d'...")
-    (irc-logging-in . "Connected, now logging in as '%s'...")
-    (irc-waiting    . "Now waiting for 'name USER' via /msg, or `M-x chess-irc-engage'")
-    (irc-challenge  . "IRC nick of user to challenge: ")))
+		       '((opponent-says  . "Your opponent says: %s")
+			 (irc-connecting . "Connecting to IRC server '%s:%d'...")
+			 (irc-logging-in . "Connected, now logging in as '%s'...")
+			 (irc-waiting    . "Now waiting for 'name USER' via /msg, or `M-x chess-irc-engage'")
+			 (irc-challenge  . "IRC nick of user to challenge: ")))
 
 (defvar chess-irc-regexp-alist
   (append chess-network-regexp-alist
@@ -145,16 +145,16 @@
 			  (target (match-string 2))
 			  (ctcp (match-string 3))
 			  (msg (match-string 4)))
-		    (with-current-buffer chess-irc-engine
-		      (when (and (string= chess-irc-nick target)
-				 (or (null chess-irc-opponent)
-				     (string= chess-irc-opponent sender)))
-			(unless chess-irc-opponent
-			  (setq chess-irc-opponent sender))
-			(if (and (not chess-irc-use-ctcp)
-				 ctcp (> (length ctcp) 0))
-			  (setq chess-irc-use-ctcp t))
-			(chess-engine-submit nil (concat msg "\n")))))))
+		      (with-current-buffer chess-irc-engine
+			(when (and (string= chess-irc-nick target)
+				   (or (null chess-irc-opponent)
+				       (string= chess-irc-opponent sender)))
+			  (unless chess-irc-opponent
+			    (setq chess-irc-opponent sender))
+			  (if (and (not chess-irc-use-ctcp)
+				   ctcp (> (length ctcp) 0))
+			      (setq chess-irc-use-ctcp t))
+			  (chess-engine-submit nil (concat msg "\n")))))))
 		  (forward-line)))
 	    (setq chess-irc-last-pos (point)
 		  chess-irc-working nil)))))))

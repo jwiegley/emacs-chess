@@ -1,4 +1,4 @@
-;;; chess-pgn.el --- Convert a chess game to/from Portable Game Notation (PGN)
+;;; chess-pgn.el --- Convert a chess game to/from Portable Game Notation (PGN)  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2008, 2014  Free Software Foundation, Inc.
 
@@ -65,8 +65,8 @@
 (defvar chess-pgn-fill-column 60)
 
 (chess-message-catalog 'english
-  '((pgn-read-error  . "Error reading move: %s")
-    (pgn-parse-error . "Error parsing PGN syntax")))
+		       '((pgn-read-error  . "Error reading move: %s")
+			 (pgn-parse-error . "Error parsing PGN syntax")))
 
 (defun chess-pgn-read-plies (game position &optional top-level)
   (let ((plies (list t)) (begin (point)) move-beg prevpos)
@@ -172,7 +172,7 @@ Optionally use the supplied STRING instead of the current buffer."
       (chess-pgn-insert-plies game index ann))))
 
 (defun chess-pgn-insert-plies (game index plies &optional
-				     for-black indented no-annotations)
+				    for-black _indented no-annotations)
   "NYI: Still have to implement INDENTED argument."
   (while plies
     (unless for-black
@@ -223,7 +223,7 @@ PGN text."
 	      tags (cdr tags))))
     index))
 
-(defun chess-insert-pgn (game &optional indented)
+(defun chess-insert-pgn (game &optional _indented)
   (let ((fen (chess-game-tag game "FEN"))
 	(first-pos (chess-game-pos game 0)))
     (when (and fen (not (string= fen (chess-pos-to-fen first-pos))))
@@ -271,7 +271,7 @@ PGN text."
 (make-variable-buffer-local 'chess-pgn-current-index)
 
 (chess-message-catalog 'english
-  '((could-not-read-pgn . "Could not read or find a PGN game")))
+		       '((could-not-read-pgn . "Could not read or find a PGN game")))
 
 ;;;###autoload
 (defun chess-pgn-read (&optional file)
@@ -337,6 +337,12 @@ PGN text."
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pgn\\'" . chess-pgn-mode))
 
+(defvar mm-inline-media-tests)
+(defvar mm-inlined-types)
+(defvar mm-automatic-display)
+(declare-function mm-display-inline-fontify "mm-decode")
+(declare-function pcomplete-parse-buffer-arguments "pcomplete")
+(declare-function pcomplete--here "pcomplete")
 (eval-after-load "mm-decode"
   '(unless (fboundp 'mm-display-pgn-inline)
      (defun mm-display-pgn-inline (handle)

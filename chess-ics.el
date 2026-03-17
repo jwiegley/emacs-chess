@@ -1,4 +1,4 @@
-;;; chess-ics.el --- Play on Internet Chess Servers
+;;; chess-ics.el --- Play on Internet Chess Servers  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2003, 2004, 2014  Free Software Foundation, Inc.
 
@@ -161,14 +161,14 @@ standard position).  In those cases, this variable should be set to nil.")
 		      (concat string "\n")))
 
 (chess-message-catalog 'english
-  '((ics-server-prompt . "Connect to chess server: ")
-    (ics-connecting    . "Connecting to Internet Chess Server '%s'...")
-    (ics-connected     . "Connecting to Internet Chess Server '%s'...done")
-    (ics-anon-login    . "Logging in on Internet Chess Server '%s' as anonymous user...")
-    (ics-logging-in    . "Logging in on Internet Chess Server '%s' as '%s'...")
-    (ics-logged-in     . "Logging in on Internet Chess Server '%s' as '%s'...done")
-    (challenge-whom    . "Whom would you like challenge? ")
-    (failed-ics-parse  . "Failed to parse ICS move string (%s): ")))
+		       '((ics-server-prompt . "Connect to chess server: ")
+			 (ics-connecting    . "Connecting to Internet Chess Server '%s'...")
+			 (ics-connected     . "Connecting to Internet Chess Server '%s'...done")
+			 (ics-anon-login    . "Logging in on Internet Chess Server '%s' as anonymous user...")
+			 (ics-logging-in    . "Logging in on Internet Chess Server '%s' as '%s'...")
+			 (ics-logged-in     . "Logging in on Internet Chess Server '%s' as '%s'...done")
+			 (challenge-whom    . "Whom would you like challenge? ")
+			 (failed-ics-parse  . "Failed to parse ICS move string (%s): ")))
 
 (defconst chess-ics-style12-regexp
   (rx (and "<12> "
@@ -301,7 +301,7 @@ standard position).  In those cases, this variable should be set to nil.")
 	      (when (> (- (line-end-position) (line-beginning-position))
 		       fill-column)
 		(save-excursion
-		 (fill-region (point) (line-end-position))))
+		  (fill-region (point) (line-end-position))))
 	      (save-excursion
 		(while (and (forward-line -1)
 			    (or (looking-at "^[ \t]*$")
@@ -314,12 +314,12 @@ standard position).  In those cases, this variable should be set to nil.")
 		  (white (match-string-no-properties 2))
 		  (black (match-string-no-properties 3)))
 	      (message "Creating game %d (%s vs. %s)" game-number white black)
-              ; chess-module-set-game* would add event handlers
-              ; to the game as if it were an engine game
-              ; We just need (chess-engine-game nil) to return the game.
+					; chess-module-set-game* would add event handlers
+					; to the game as if it were an engine game
+					; We just need (chess-engine-game nil) to return the game.
               (setq chess-engine-opponent-name (if (string= white chess-ics-handle) black white))
               (setq chess-module-game (chess-ics-game game-number :White white :Black black))
-))))
+	      ))))
    (cons "^<10>$" (function (lambda () (chess-ics-send "style 12\nrefresh"))))
    (cons "^Game \\([0-9]+\\): \\S-+ backs up \\([0-9]+\\).$"
 	 (function
@@ -355,8 +355,8 @@ standard position).  In those cases, this variable should be set to nil.")
 				    :White (match-string 1)
 				    :Black (match-string 2)))
 	      (when chess-ics-movelist-start-position
-	      (chess-game-set-start-position
-	       chess-ics-movelist-game chess-ics-movelist-start-position)))
+		(chess-game-set-start-position
+		 chess-ics-movelist-game chess-ics-movelist-start-position)))
 	    t)))
    ;; Movelist item
    (cons (concat "^\\s-*\\([0-9]+\\)\\.\\s-+\\(" chess-algebraic-regexp "\\)"
@@ -460,7 +460,7 @@ See `chess-ics-game'.")
 			 (setq tag-pairs (cddr tag-pairs))
 		       (if (not (string= (chess-game-tag game tag) "?"))
 			   (message "Game %d %s %s != %s"
-				  game-number tag (chess-game-tag game tag) val))
+				    game-number tag (chess-game-tag game tag) val))
 		       ;; Update tag and proceed
 		       (chess-game-set-tag game tag val)
 		       (setq tags (cddr tags)))))
@@ -597,9 +597,9 @@ See `chess-ics-game'.")
 		      (if (chess-pos-side-to-move position) 2 1))))
 	  (move (unless (string= (match-string 29) "none")
 		  (cl-case (aref (match-string 29) (1- (length (match-string 29))))
-		    (?+ (chess-pos-set-status position :check))
-		    (?# (chess-pos-set-status position :checkmate)
-			(chess-pos-set-epd position 'ce 32767)))
+			   (?+ (chess-pos-set-status position :check))
+			   (?# (chess-pos-set-status position :checkmate)
+			       (chess-pos-set-epd position 'ce 32767)))
 		  ;; jww (2002-04-30): what about stalemate?  do I need to
 		  ;; calculate this each time?
 		  (when nil
@@ -709,15 +709,15 @@ See `chess-ics-game'.")
   (tabulated-list-print))
 
 (defun chess-ics-sought-add (id name rating rated time inc variant
-			     ics-buffer cmd)
+				ics-buffer cmd)
   (let ((inhibit-redisplay t))
     (with-current-buffer
-      (or (get-buffer chess-ics-sought-buffer-name)
-	  (with-current-buffer (get-buffer-create
-				chess-ics-sought-buffer-name)
-	    (chess-ics-ads-mode)
-	    (and chess-ics-popup-sought (display-buffer (current-buffer)))
-	    (current-buffer)))
+	(or (get-buffer chess-ics-sought-buffer-name)
+	    (with-current-buffer (get-buffer-create
+				  chess-ics-sought-buffer-name)
+	      (chess-ics-ads-mode)
+	      (and chess-ics-popup-sought (display-buffer (current-buffer)))
+	      (current-buffer)))
       (setq chess-ics-sought-parent-buffer ics-buffer)
       (add-to-list 'tabulated-list-entries
 		   (list id

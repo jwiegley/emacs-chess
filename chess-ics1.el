@@ -1,4 +1,4 @@
-;;; chess-ics1.el --- Classic ICS1 style chessboard display
+;;; chess-ics1.el --- Classic ICS1 style chessboard display  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2005, 2014  Free Software Foundation, Inc.
 

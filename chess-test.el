@@ -1,4 +1,4 @@
-;;; chess-test.el --- Put Emacs Chess through an enormous battery of tests
+;;; chess-test.el --- Put Emacs Chess through an enormous battery of tests  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 
@@ -72,7 +72,7 @@
 				   read-count (1+ index) ply-count
 				   (/ (float ply-count)
 				      (float-time
-				       (subtract-time (current-time)
+				       (time-subtract (current-time)
 						      begin)))))))
 		(error
 		 (setq error-occurred t)
@@ -82,8 +82,8 @@
 	    (message "Read %d games (last %d): %d plies (%.2f ply/sec, %.2f seconds)"
 		     read-count (1- index) ply-count
 		     (/ (float ply-count)
-			(float-time (subtract-time (current-time) begin)))
-		     (float-time (subtract-time (current-time) begin)))
+			(float-time (time-subtract (current-time) begin)))
+		     (float-time (time-subtract (current-time) begin)))
 	    (message "Running validation suite...done")
 	    (chess-database-close database)))
       (error "Failed to open chess database '%s'" file))

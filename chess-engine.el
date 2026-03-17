@@ -1,4 +1,4 @@
-;;; chess-engine.el --- Obtain movements and other information from an engine
+;;; chess-engine.el --- Obtain movements and other information from an engine  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 Free Software Foundation, Inc.
 
@@ -58,36 +58,36 @@
 ;;
 
 (chess-message-catalog 'english
-  '((invalid-fen    . "Received invalid FEN string: %s")
-    (invalid-pgn    . "Received invalid PGN text")
-    (now-black	    . "Your opponent played the first move, you are now black")
-    (move-passed    . "Your opponent has passed the move to you")
-    (want-to-play   . "Do you wish to play a chess game against %s? ")
-    (want-to-play-a . "Do you wish to play a chess game against an anonymous opponent? ")
-    (opp-quit	    . "Your opponent has quit playing")
-    (opp-resigned   . "Your opponent has resigned")
-    (opp-draw	    . "Your opponent offers a draw, accept? ")
-    (opp-abort	    . "Your opponent wants to abort this game, accept? ")
-    (opp-undo	    . "Your opponent wants to take back %d moves, accept? ")
-    (opp-ready	    . "Your opponent, %s, is now ready to play")
-    (opp-ready-a    . "Your opponent is ready to play; pass or make your move")
-    (opp-draw-acc   . "Your draw offer was accepted")
-    (opp-abort-acc  . "Your offer to abort was accepted")
-    (opp-undo-acc   . "Request to undo %d moves was accepted")
-    (opp-draw-dec   . "Your draw offer was declined")
-    (opp-abort-dec  . "Your offer to abort was declined")
-    (opp-undo-dec   . "Your request to undo %d moves was decline")
-    (opp-draw-ret   . "Your opponent has retracted their draw offer")
-    (opp-abort-ret  . "Your opponent has retracted their offer to abort")
-    (opp-undo-ret   . "Your opponent has retracted their request to undo %d moves")
-    (opp-illegal    . "Your opponent states your last command was illegal")
-    (opp-call-flag  . "Your flag fell, and your opponent has called time")
-    (opp-flag-fell  . "Your opponent has forfeited the game on time")
-    (failed-start   . "Failed to start chess engine process")))
+		       '((invalid-fen    . "Received invalid FEN string: %s")
+			 (invalid-pgn    . "Received invalid PGN text")
+			 (now-black	    . "Your opponent played the first move, you are now black")
+			 (move-passed    . "Your opponent has passed the move to you")
+			 (want-to-play   . "Do you wish to play a chess game against %s? ")
+			 (want-to-play-a . "Do you wish to play a chess game against an anonymous opponent? ")
+			 (opp-quit	    . "Your opponent has quit playing")
+			 (opp-resigned   . "Your opponent has resigned")
+			 (opp-draw	    . "Your opponent offers a draw, accept? ")
+			 (opp-abort	    . "Your opponent wants to abort this game, accept? ")
+			 (opp-undo	    . "Your opponent wants to take back %d moves, accept? ")
+			 (opp-ready	    . "Your opponent, %s, is now ready to play")
+			 (opp-ready-a    . "Your opponent is ready to play; pass or make your move")
+			 (opp-draw-acc   . "Your draw offer was accepted")
+			 (opp-abort-acc  . "Your offer to abort was accepted")
+			 (opp-undo-acc   . "Request to undo %d moves was accepted")
+			 (opp-draw-dec   . "Your draw offer was declined")
+			 (opp-abort-dec  . "Your offer to abort was declined")
+			 (opp-undo-dec   . "Your request to undo %d moves was decline")
+			 (opp-draw-ret   . "Your opponent has retracted their draw offer")
+			 (opp-abort-ret  . "Your opponent has retracted their offer to abort")
+			 (opp-undo-ret   . "Your opponent has retracted their request to undo %d moves")
+			 (opp-illegal    . "Your opponent states your last command was illegal")
+			 (opp-call-flag  . "Your flag fell, and your opponent has called time")
+			 (opp-flag-fell  . "Your opponent has forfeited the game on time")
+			 (failed-start   . "Failed to start chess engine process")))
 
 (defsubst chess-engine-convert-algebraic (move &optional trust-check)
   "Convert algebraic move to a ply in reference to the engine position.
-If conversion fails, this function fired an 'illegal event."
+If conversion fails, this function fired an \\='illegal event."
   (or (chess-algebraic-to-ply (chess-engine-position nil) move trust-check)
       (chess-engine-command nil 'illegal)))
 
@@ -306,7 +306,7 @@ If conversion fails, this function fired an 'illegal event."
 	(chess-game-run-hooks game 'chat (car args)))))))
 
 (defun chess-engine-create (module game &optional response-handler
-				 &rest handler-ctor-args)
+				   &rest handler-ctor-args)
   "Create a new chess engine MODULE (a symbol) associated with GAME.
 Optionally supply a new RESPONSE-HANDLER."
   (let* ((engine (apply 'chess-module-create module game nil
@@ -326,7 +326,7 @@ Optionally supply a new RESPONSE-HANDLER."
 	      (chess-error 'failed-start))
 	    (if (or (not (process-filter proc))
 		    (eq (process-filter proc) 'internal-default-process-filter))
-	      (set-process-filter proc 'chess-engine-filter)))
+		(set-process-filter proc 'chess-engine-filter)))
 	  (setq chess-engine-current-marker (point-marker))
 	  (chess-game-set-data game 'engine (current-buffer)))))))
 
@@ -335,46 +335,46 @@ Optionally supply a new RESPONSE-HANDLER."
 (defun chess-engine-command (engine event &rest args)
   "Call the handler of ENGINE with EVENT (a symbol) and ARGS."
   (chess-with-current-buffer engine
-    (apply chess-module-event-handler chess-module-game event args)))
+			     (apply chess-module-event-handler chess-module-game event args)))
 
 ;; 'ponder
 ;; 'search-depth
 ;; 'wall-clock
 
 (defun chess-engine-set-option (engine option value)
-  "Set ENGINE OPTION to VALUE by invoking its handler with the 'set-option
+  "Set ENGINE OPTION to VALUE by invoking its handler with the \\='set-option
 event."
   (chess-with-current-buffer engine
-    (chess-engine-command engine 'set-option option value)))
+			     (chess-engine-command engine 'set-option option value)))
 
 (defun chess-engine-set-response-handler (engine &optional response-handler)
   "Set a new RESPONSE-HANDLER for ENGINE."
   (chess-with-current-buffer engine
-    (setq chess-engine-response-handler
-	  (or response-handler 'chess-engine-default-handler))))
+			     (setq chess-engine-response-handler
+				   (or response-handler 'chess-engine-default-handler))))
 
 (defun chess-engine-response-handler (engine)
   "Return the function currently defined as the response-handler for ENGINE."
   (chess-with-current-buffer engine
-    chess-engine-response-handler))
+			     chess-engine-response-handler))
 
 (defun chess-engine-set-position (engine &optional position my-color)
   (chess-with-current-buffer engine
-    (let ((chess-game-inhibit-events t))
-      (if position
-	  (progn
-	    (chess-game-set-start-position chess-module-game position)
-	    (chess-game-set-data chess-module-game 'my-color my-color))
-	(chess-game-set-start-position chess-module-game
-				       chess-starting-position)
-	(chess-game-set-data chess-module-game 'my-color t))
-      (chess-game-set-data chess-module-game 'active t))
-    (chess-game-run-hooks chess-module-game 'orient)))
+			     (let ((chess-game-inhibit-events t))
+			       (if position
+				   (progn
+				     (chess-game-set-start-position chess-module-game position)
+				     (chess-game-set-data chess-module-game 'my-color my-color))
+				 (chess-game-set-start-position chess-module-game
+								chess-starting-position)
+				 (chess-game-set-data chess-module-game 'my-color t))
+			       (chess-game-set-data chess-module-game 'active t))
+			     (chess-game-run-hooks chess-module-game 'orient)))
 
 (defun chess-engine-position (engine)
   "Return the current position of the game associated with ENGINE."
   (chess-with-current-buffer engine
-    (chess-game-pos chess-module-game)))
+			     (chess-game-pos chess-module-game)))
 
 (defalias 'chess-engine-game 'chess-module-game)
 (defalias 'chess-engine-set-game 'chess-module-set-game)
@@ -383,35 +383,35 @@ event."
 
 (defun chess-engine-move (engine ply)
   (chess-with-current-buffer engine
-    (chess-game-move chess-module-game ply)
-    (chess-engine-command engine 'move ply)))
+			     (chess-game-move chess-module-game ply)
+			     (chess-engine-command engine 'move ply)))
 
 (chess-message-catalog 'english
-  '((engine-not-running . "The engine you were using is no longer running")))
+		       '((engine-not-running . "The engine you were using is no longer running")))
 
 (defun chess-engine-send (engine string)
   "Send the given STRING to ENGINE.
 If `chess-engine-process' is a valid process object, use `process-send-string'
-to submit the data.  Otherwise, the 'send event is triggered and the engine
+to submit the data.  Otherwise, the \\='send event is triggered and the engine
 event handler can take care of the data."
   (chess-with-current-buffer engine
-    (let ((proc chess-engine-process))
-      (if proc
-	  (if (memq (process-status proc) '(run open))
-	      (process-send-string proc string)
-	    (chess-message 'engine-not-running)
-	    (chess-engine-command nil 'destroy))
-	(chess-engine-command nil 'send string)))))
+			     (let ((proc chess-engine-process))
+			       (if proc
+				   (if (memq (process-status proc) '(run open))
+				       (process-send-string proc string)
+				     (chess-message 'engine-not-running)
+				     (chess-engine-command nil 'destroy))
+				 (chess-engine-command nil 'send string)))))
 
 (defun chess-engine-submit (engine string)
   "Submit the given STRING, so ENGINE sees it in its input stream."
   (chess-with-current-buffer engine
-    (let ((proc chess-engine-process))
-      (when (and proc (processp proc)
-		 (not (memq (process-status proc) '(run open))))
-	(chess-message 'engine-not-running)
-	(chess-engine-command nil 'destroy))
-      (chess-engine-filter nil string))))
+			     (let ((proc chess-engine-process))
+			       (when (and proc (processp proc)
+					  (not (memq (process-status proc) '(run open))))
+				 (chess-message 'engine-not-running)
+				 (chess-engine-command nil 'destroy))
+			       (chess-engine-filter nil string))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

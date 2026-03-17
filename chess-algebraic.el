@@ -1,4 +1,4 @@
-;;; chess-algebraic.el --- Convert a ply to/from standard chess algebraic notation
+;;; chess-algebraic.el --- Convert a ply to/from standard chess algebraic notation  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2008, 2014  Free Software Foundation, Inc.
 
@@ -77,11 +77,11 @@ This regexp handles both long and short form.")
 (defconst chess-algebraic-regexp-ws (concat chess-algebraic-regexp "\\s-"))
 
 (chess-message-catalog 'english
-  '((clarify-piece     . "Clarify piece to move by rank or file")
-    (could-not-clarify . "Could not determine which piece to use")
-    (could-not-diff    . "Could not differentiate piece")
-    (no-candidates     . "There are no candidate moves for '%s'")
-    (at-move-string    . "At algebraic move '%s': %s")))
+		       '((clarify-piece     . "Clarify piece to move by rank or file")
+			 (could-not-clarify . "Could not determine which piece to use")
+			 (could-not-diff    . "Could not differentiate piece")
+			 (no-candidates     . "There are no candidate moves for '%s'")
+			 (at-move-string    . "At algebraic move '%s': %s")))
 
 (defun chess-algebraic-to-ply (position move &optional trust)
   "Convert the algebraic notation MOVE for POSITION to a ply."
@@ -166,39 +166,39 @@ This regexp handles both long and short form.")
 	  (from-rank (chess-index-rank from))
 	  (from-file (chess-index-file from))
 	  (differentiator (chess-ply-keyword ply :which)))
-	(unless differentiator
-	  (let ((candidates (chess-search-position pos to from-piece nil t)))
-	    (when (> (length candidates) 1)
-	      (dolist (candidate candidates)
-		(when (= (chess-index-rank candidate) from-rank)
-		  (setq rank (1+ rank)))
-		(when (= (chess-index-file candidate) from-file)
-		  (setq file (1+ file))))
-	      (cond
-	       ((= file 1)
-		(setq differentiator (+ from-file ?a)))
-	       ((= rank 1)
-		(setq differentiator (+ (- 7 from-rank) ?1)))
-	       (t (chess-error 'could-not-diff)))
-	      (chess-ply-set-keyword ply :which differentiator))))
-	(concat
-	 (unless (= (upcase from-piece) ?P)
-	   (char-to-string (upcase from-piece)))
-	 (cond
-	  (long (chess-index-to-coord from))
-	  (differentiator (char-to-string differentiator))
-	  ((and (not long) (= (upcase from-piece) ?P)
-		(/= from-file (chess-index-file to)))
-	   (char-to-string (+ from-file ?a))))
-	 (if (or (/= ?  (chess-pos-piece pos to))
-		 (chess-ply-keyword ply :en-passant))
-	     "x" (if long "-"))
-	 (chess-index-to-coord to)
-	 (let ((promote (chess-ply-keyword ply :promote)))
-	   (if promote
-	       (concat "=" (char-to-string promote))))
-	 (if (chess-ply-keyword ply :check) "+"
-	   (if (chess-ply-keyword ply :checkmate) "#"))))))
+     (unless differentiator
+       (let ((candidates (chess-search-position pos to from-piece nil t)))
+	 (when (> (length candidates) 1)
+	   (dolist (candidate candidates)
+	     (when (= (chess-index-rank candidate) from-rank)
+	       (setq rank (1+ rank)))
+	     (when (= (chess-index-file candidate) from-file)
+	       (setq file (1+ file))))
+	   (cond
+	    ((= file 1)
+	     (setq differentiator (+ from-file ?a)))
+	    ((= rank 1)
+	     (setq differentiator (+ (- 7 from-rank) ?1)))
+	    (t (chess-error 'could-not-diff)))
+	   (chess-ply-set-keyword ply :which differentiator))))
+     (concat
+      (unless (= (upcase from-piece) ?P)
+	(char-to-string (upcase from-piece)))
+      (cond
+       (long (chess-index-to-coord from))
+       (differentiator (char-to-string differentiator))
+       ((and (not long) (= (upcase from-piece) ?P)
+	     (/= from-file (chess-index-file to)))
+	(char-to-string (+ from-file ?a))))
+      (if (or (/= ?  (chess-pos-piece pos to))
+	      (chess-ply-keyword ply :en-passant))
+	  "x" (if long "-"))
+      (chess-index-to-coord to)
+      (let ((promote (chess-ply-keyword ply :promote)))
+	(if promote
+	    (concat "=" (char-to-string promote))))
+      (if (chess-ply-keyword ply :check) "+"
+	(if (chess-ply-keyword ply :checkmate) "#"))))))
 
 (defun chess-ply-to-algebraic (ply &optional long)
   "Convert the given PLY to algebraic notation.

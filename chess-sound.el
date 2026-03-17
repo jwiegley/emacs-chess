@@ -1,4 +1,4 @@
-;;; chess-sound.el --- Announce chess moves with pre-recorded sound files
+;;; chess-sound.el --- Announce chess moves with pre-recorded sound files  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2008, 2014  Free Software Foundation, Inc.
 

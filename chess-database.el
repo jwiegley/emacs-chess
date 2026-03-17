@@ -1,4 +1,4 @@
-;;; chess-database.el --- Basic code for manipulating game databases
+;;; chess-database.el --- Basic code for manipulating game databases  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2008  Free Software Foundation, Inc.
 
@@ -37,7 +37,7 @@
 (make-variable-buffer-local 'chess-database-handler)
 
 (chess-message-catalog 'english
-  '((no-such-database . "There is no such chess database module '%s'")))
+		       '((no-such-database . "There is no such chess database module '%s'")))
 
 (defun chess-database-do-open (module file)
   "Returns the opened database object, or nil."

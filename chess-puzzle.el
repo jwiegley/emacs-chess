@@ -1,4 +1,4 @@
-;;; chess-puzzle.el --- Support for viewing and solving chess puzzles
+;;; chess-puzzle.el --- Support for viewing and solving chess puzzles  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2008, 2014  Free Software Foundation, Inc.
 
@@ -70,8 +70,8 @@ it.  Useful if you have all of your puzzles in a single file."
 (make-variable-buffer-local 'chess-puzzle-position)
 
 (chess-message-catalog 'english
-  '((bad-game-read . "Error reading game at position %d")
-    (end-of-puzzles . "There are no more puzzles in this collection")))
+		       '((bad-game-read . "Error reading game at position %d")
+			 (end-of-puzzles . "There are no more puzzles in this collection")))
 
 ;;;###autoload
 (defun chess-puzzle-set-default-file (file)
@@ -96,27 +96,27 @@ Useful mostly if you use `chess-puzzle-autoload-file'."
   (message "chess-puzzle-default-file set to '%s'" file))
 
 ;;;###autoload
-(defun chess-puzzle (file &optional index) ;FIXME: index not used!
+(defun chess-puzzle (file &optional _index)
   "Pick a random puzzle from FILE, and solve it against the default engine.
 The spacebar in the display buffer is bound to `chess-puzzle-next',
 making it easy to go on to the next puzzle once you've solved one."
   (interactive
    (list (let* ((file-name (or chess-puzzle-default-file
-                    (file-name-directory (buffer-file-name))))
+			       (file-name-directory (buffer-file-name))))
                 (file-p (not (file-directory-p file-name)))
                 (auto-load (and file-p chess-puzzle-autoload-file)))
-     (if (not auto-load)
-         (read-file-name
-          (format "Read chess puzzles from%s: "
-             (if file-p
-                 (concat
-                    " ("
-                    (file-name-nondirectory file-name)
-                    ")")
-               ""))
-          (file-name-directory file-name)
-          (when file-p file-name) t)
-       file-name))))
+	   (if (not auto-load)
+               (read-file-name
+		(format "Read chess puzzles from%s: "
+			(if file-p
+			    (concat
+			     " ("
+			     (file-name-nondirectory file-name)
+			     ")")
+			  ""))
+		(file-name-directory file-name)
+		(when file-p file-name) t)
+	     file-name))))
 
   (let* ((database (chess-database-open file))
 	 (objects (and database (chess-session)))

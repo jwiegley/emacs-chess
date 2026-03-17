@@ -1,4 +1,4 @@
-;;; chess-fen.el --- Convert a chess position to/from FEN notation
+;;; chess-fen.el --- Convert a chess position to/from FEN notation  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2014  Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-;;; chess-epd.el --- Extended Position Description Format
+;;; chess-epd.el --- Extended Position Description Format  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2004  Free Software Foundation, Inc.
 

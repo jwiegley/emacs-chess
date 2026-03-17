@@ -1,4 +1,4 @@
-;;; chess-kibitz.el --- Chess kibitzing, stored as annotations
+;;; chess-kibitz.el --- Chess kibitzing, stored as annotations  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2014 Free Software Foundation, Inc.
 

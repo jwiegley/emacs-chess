@@ -1,4 +1,4 @@
-;;; chess-tutorial.el --- A simple chess training display
+;;; chess-tutorial.el --- A simple chess training display  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2002, 2004, 2014  Free Software Foundation, Inc.
 
@@ -33,10 +33,10 @@
 (require 'chess-message)
 
 (chess-message-catalog 'english
-  '((queen-would-take . "The queen would take your knight!")
-    (congratulations  . "Congratulations!")
-    (knight-1-done    . "Goal: take all the pawns, without letting the queen take your knight")
-    (cannot-take-queen . "You cannot take the queen")))
+		       '((queen-would-take . "The queen would take your knight!")
+			 (congratulations  . "Congratulations!")
+			 (knight-1-done    . "Goal: take all the pawns, without letting the queen take your knight")
+			 (cannot-take-queen . "You cannot take the queen")))
 
 (defun chess-tutorial-knight-1 (game _ignore event &rest _args)
   (if (eq event 'move)

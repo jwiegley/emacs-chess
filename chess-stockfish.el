@@ -1,4 +1,4 @@
-;;; chess-stockfish.el --- Play against stockfish!
+;;; chess-stockfish.el --- Play against stockfish!  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014  Free Software Foundation, Inc.
 
