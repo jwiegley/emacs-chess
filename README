@@ -20,7 +20,7 @@ very simple chess thinking module implemented in pure Emacs Lisp.
 chess.el also provides a mode for editing Portable Game Notation (PGN)
 files.
 
-To improve your chessaility, you might also like to have a look at
+To improve your chessability, you might also like to have a look at
 chess-puzzle, which allows you to solve chess puzzle collections (in
 PGN or EPD format) against one of the engines you have installed.
 
